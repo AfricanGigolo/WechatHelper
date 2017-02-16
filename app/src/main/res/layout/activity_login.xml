@@ -2,14 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@drawable/back"
     >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="聊天记录助手"
+        android:textSize="35dp"
+        android:layout_marginTop="90dp"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="90dp"
         >
 
         <TextView
@@ -18,7 +27,7 @@
             android:textSize="20dp"
             android:text="账号"
             android:id="@+id/tv_lg_id"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
 
             />
 
@@ -26,15 +35,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="请输入账号"
-            android:textColorHint="@android:color/darker_gray"
+            android:textColorHint="@android:color/holo_green_light"
             android:id="@+id/et_lg_id"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
 
             />
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,7 +58,7 @@
             android:textSize="20dp"
             android:text="密码"
             android:id="@+id/tv_lg_pw"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
 
             />
 
@@ -59,8 +69,8 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:id="@+id/et_lg_pw"
-            android:textColorHint="@android:color/darker_gray"
-            android:textColor="@android:color/black"
+            android:textColorHint="@android:color/holo_green_light"
+            android:textColor="@android:color/white"
 
             />
 
