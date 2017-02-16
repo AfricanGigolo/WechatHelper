@@ -1,5 +1,6 @@
 package com.example.chenjunfan.wechathelper;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -94,6 +95,8 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.bt_fm1_yes:
+                Intent intent = new Intent(getActivity(),Fm1UploadActivity.class);
+                startActivity(intent);
                 break;
 
             case R.id.bt_fm1_cancle:
