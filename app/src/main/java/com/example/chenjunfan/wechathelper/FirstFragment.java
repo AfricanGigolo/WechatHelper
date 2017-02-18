@@ -6,8 +6,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
 
     private List<Fm1Itembean> itembeanList;
     private Fm1Adapter mAdapter;
+    LinearLayout selectLL,bottomLL;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -51,6 +54,18 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
         }
         mAdapter = new Fm1Adapter(getContext(),itembeanList);
         listView.setAdapter(mAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mAdapter.flag!=true)
+                {
+                    mAdapter.flag = true;
+                    selectLL.setVisibility(View.VISIBLE);
+                    bottomLL.setVisibility(View.VISIBLE);
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        });
 
         return rootView;
     }
@@ -62,6 +77,8 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
         yesBT = (Button) view.findViewById(R.id.bt_fm1_yes);
         cancleBT = (Button) view.findViewById(R.id.bt_fm1_cancle);
         listView = (ListView) view.findViewById(R.id.lv_fm1);
+        selectLL = (LinearLayout) view.findViewById(R.id.ll_fm1_select);
+        bottomLL = (LinearLayout) view.findViewById(R.id.ll_fm1_bottom);
 
         selectnonBT.setOnClickListener(this);
         selectallBT.setOnClickListener(this);
@@ -100,6 +117,11 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.bt_fm1_cancle:
+                mAdapter.flag = false;
+                selectLL.setVisibility(View.GONE);
+                bottomLL.setVisibility(View.GONE);
+                mAdapter.notifyDataSetChanged();
+
                 break;
         }
 

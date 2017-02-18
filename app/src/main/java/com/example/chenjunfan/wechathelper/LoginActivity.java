@@ -45,6 +45,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 //写登录逻辑
                 Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                 startActivity(intent);
+                finish();
                 break;
         }
     }

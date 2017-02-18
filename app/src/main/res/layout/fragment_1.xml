@@ -34,7 +34,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true">
+                android:layout_alignParentEnd="true"
+                android:id="@+id/ll_fm1_select"
+                android:visibility="gone"
+                >
 
                 <Button
                     android:text="全选"
@@ -77,7 +80,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:id="@+id/LL_fm1_1"
+            android:id="@+id/ll_fm1_bottom"
+            android:visibility="gone"
             >
 
             <Button
@@ -104,7 +108,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
-            android:layout_above="@+id/LL_fm1_1"
+            android:layout_above="@+id/ll_fm1_bottom"
             android:id="@+id/lv_fm1"
             />
 

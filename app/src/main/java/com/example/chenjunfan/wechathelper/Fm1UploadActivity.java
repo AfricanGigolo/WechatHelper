@@ -22,7 +22,7 @@ import java.util.Calendar;
 public class Fm1UploadActivity extends Activity implements View.OnClickListener {
     TextView longTV,shortTV;
     FrameLayout fl_desc;
-    Button moreBT,date1BT,date2BT;
+    Button moreBT,date1BT,date2BT,yesBT,cancleBT;
     ImageButton reBT;
     ImageView moreIV;
     boolean isInit = false;
@@ -54,6 +54,8 @@ public class Fm1UploadActivity extends Activity implements View.OnClickListener 
         date1BT = (Button) findViewById(R.id.bt_fm1up_date1);
         date2BT = (Button) findViewById(R.id.bt_fm1up_date2);
         reBT = (ImageButton) findViewById(R.id.bt_fm1up_re);
+        yesBT = (Button) findViewById(R.id.bt_fm1up_yes);
+        cancleBT = (Button) findViewById(R.id.bt_fm1up_cancle);
 
         moreBT.setOnClickListener(this);
         date2BT.setOnClickListener(this);
@@ -122,6 +124,9 @@ public class Fm1UploadActivity extends Activity implements View.OnClickListener 
                 dpd2.show();
                 break;
             case R.id.bt_fm1up_re:
+                finish();
+                break;
+            case R.id.bt_fm1up_cancle:
                 finish();
                 break;
 

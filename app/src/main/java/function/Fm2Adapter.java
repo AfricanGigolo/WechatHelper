@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.chenjunfan.wechathelper.R;
@@ -14,18 +14,18 @@ import com.example.chenjunfan.wechathelper.R;
 import java.util.List;
 
 /**
- * Created by chenjunfan on 2017/2/16.
+ * Created by chenjunfan on 2017/2/18.
  */
 
-public class Fm1Adapter extends BaseAdapter{
+public class Fm2Adapter extends BaseAdapter {
 
-    private List<Fm1Itembean> itemList;
+    private List<Fm2Itembean> itemList;
     private LayoutInflater mInfalter;
-    public boolean flag;
+    public boolean flag = false;
 
 
 
-    public Fm1Adapter(Context context, List<Fm1Itembean> itemList)
+    public Fm2Adapter(Context context, List<Fm2Itembean> itemList)
     {
         this.itemList = itemList;
         mInfalter =  LayoutInflater.from(context);
@@ -47,27 +47,29 @@ public class Fm1Adapter extends BaseAdapter{
     }
 
     @Override
-    public View getView( int i, View convertView, ViewGroup viewGroup) {
-        final ViewHolder viewHolder;
+    public View getView(int i, View convertView, ViewGroup viewGroup) {
+        final Fm2Adapter.ViewHolder viewHolder;
         if(convertView == null)
         {
             viewHolder = new ViewHolder();
-            convertView = mInfalter.inflate(R.layout.item_fm1,null);
-            viewHolder.checkboxOperateData = (CheckBox) convertView.findViewById(R.id.checkBox_itemfm1_item);
-            viewHolder.titleTV = (TextView) convertView.findViewById(R.id.tv_itemfm1_title);
-            viewHolder.itemLL = (LinearLayout) convertView.findViewById(R.id.ll_fm1item);
+            convertView = mInfalter.inflate(R.layout.item_fm2,null);
+            viewHolder.checkboxOperateData = (CheckBox) convertView.findViewById(R.id.checkBox_itemfm2_item);
+            viewHolder.titleTV = (TextView) convertView.findViewById(R.id.tv_itemfm2_title);
+            viewHolder.rightTV = (TextView) convertView.findViewById(R.id.tv_itemfm2_right);
+            viewHolder.itemRL = (RelativeLayout) convertView.findViewById(R.id.rl_fm2item);
             convertView.setTag(viewHolder);
 
         }
         else
         {
-            viewHolder = (ViewHolder) convertView.getTag();
+            viewHolder = (Fm2Adapter.ViewHolder) convertView.getTag();
         }
-        final Fm1Itembean itembean = itemList.get(i);
+        final Fm2Itembean itembean = itemList.get(i);
         final int tempI = i;
         if (itembean != null)
         {
             viewHolder.titleTV.setText(itembean.getTitle());
+            viewHolder.rightTV.setText("权值:"+itembean.getRight());
 
             if (flag) {
                 viewHolder.checkboxOperateData.setVisibility(View.VISIBLE);
@@ -76,21 +78,22 @@ public class Fm1Adapter extends BaseAdapter{
             }
             viewHolder.checkboxOperateData.setChecked(itembean.getIscheck());
 
-
             //注意这里设置的不是onCheckedChangListener，还是值得思考一下的
-//            viewHolder.itemLL.setOnClickListener(new View.OnClickListener() {
+//            viewHolder.itemRL.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View v) {
 //                    if (itembean.getIscheck()) {
-//                        viewHolder.checkboxOperateData.setChecked(false);
-//                        itembean.setIscheck(false);
-//                        itemList.get(tempI).setIscheck(false);
-//
+//                        if(flag) {
+//                            itembean.setIscheck(false);
+//                            viewHolder.checkboxOperateData.setChecked(flag);
+//                            itemList.get(tempI).setIscheck(false);
+//                        }
 //                    } else {
-//                        viewHolder.checkboxOperateData.setChecked(true);
-//                        itembean.setIscheck(true);
-//                        itemList.get(tempI).setIscheck(true);
-//
+//                        if(flag) {
+//                            itembean.setIscheck(true);
+//                            viewHolder.checkboxOperateData.setChecked(true);
+//                            itemList.get(tempI).setIscheck(true);
+//                        }
 //                    }
 //                }
 //            });
@@ -99,15 +102,15 @@ public class Fm1Adapter extends BaseAdapter{
                 @Override
                 public void onClick(View view) {
                     if (itembean.getIscheck()) {
-
+                        if(flag) {
                             itembean.setIscheck(false);
                             itemList.get(tempI).setIscheck(false);
-
+                        }
                     } else {
-
+                        if(flag) {
                             itembean.setIscheck(true);
                             itemList.get(tempI).setIscheck(true);
-
+                        }
                     }
                 }
 
@@ -122,9 +125,8 @@ public class Fm1Adapter extends BaseAdapter{
 
 
     class ViewHolder{
-        public TextView titleTV;
+        public TextView titleTV,rightTV;
         public CheckBox checkboxOperateData;
-        public LinearLayout itemLL;
-
+        public RelativeLayout itemRL;
     }
 }

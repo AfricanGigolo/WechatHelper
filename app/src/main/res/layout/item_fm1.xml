@@ -4,6 +4,7 @@
     android:layout_height="100dp"
     android:gravity="center"
     android:background="@android:color/white"
+    android:id="@+id/ll_fm1item"
     >
 
     <TextView
@@ -24,5 +25,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/checkBox_itemfm1_item"
         android:layout_marginRight="30dp"
+        android:background="@android:color/darker_gray"
         android:checked="true" />
 </LinearLayout>
