@@ -24,7 +24,7 @@
                 android:id="@+id/tv_nkw_title"
                 android:layout_centerInParent="true"
                 android:textColor="@android:color/white"
-                android:text="上传聊天记录"
+                android:text="添加关键词"
                 android:textSize="25dp"
                 />
 

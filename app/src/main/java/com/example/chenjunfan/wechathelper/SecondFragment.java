@@ -75,6 +75,7 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getActivity(),NewkeywordActivity.class);
+                intent.putExtra("title","编辑关键词");
                 startActivity(intent);
             }
         });
@@ -134,6 +135,7 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.bt_fm2_plus:
                 Intent intent = new Intent(getActivity(),NewkeywordActivity.class);
+                intent.putExtra("title","添加关键词");
                 startActivity(intent);
                 break;
         }

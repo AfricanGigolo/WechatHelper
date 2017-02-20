@@ -61,6 +61,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                 {
                     mAdapter.flag = true;
                     selectLL.setVisibility(View.VISIBLE);
+
                     bottomLL.setVisibility(View.VISIBLE);
                     mAdapter.notifyDataSetChanged();
                 }

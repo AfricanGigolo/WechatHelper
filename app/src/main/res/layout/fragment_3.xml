@@ -19,7 +19,7 @@
 
 
             <TextView
-                android:text="上传聊天记录"
+                android:text="自动上传列表"
                 android:textSize="25dp"
                 android:gravity="center"
                 android:textColor="@android:color/white"

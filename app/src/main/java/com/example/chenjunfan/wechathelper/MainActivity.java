@@ -32,7 +32,7 @@ public class MainActivity extends FragmentActivity {
     private int mImageViewArray[] = {R.drawable.tab_home_btn,R.drawable.tab_home_btn,R.drawable.tab_home_btn};
 
     //Tab选项卡的文字
-    private String mTextviewArray[] = {"上传记录","关键词管理", "群组管理"};
+    private String mTextviewArray[] = {"上传记录","关键词管理", "自动上传"};
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
