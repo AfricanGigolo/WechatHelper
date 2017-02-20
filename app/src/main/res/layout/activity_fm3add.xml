@@ -1,42 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:id="@+id/fl_fm3add_1"
         android:background="@android:color/holo_green_light"
+        android:layout_alignParentTop="true"
         >
-
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true">
-
+            >
 
             <TextView
-                android:text="上传聊天记录"
-                android:textSize="25dp"
                 android:gravity="center"
-                android:textColor="@android:color/white"
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView2"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
+                android:id="@+id/textView"
+                android:layout_centerInParent="true"
+                android:textColor="@android:color/white"
+                android:text="添加上传群组"
+                android:textSize="25dp"
+                />
 
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tab_re_btn"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/bt_fm3add_re"
+                />
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:id="@+id/ll_fm3add_select"
                 android:layout_alignParentEnd="true"
-                android:id="@+id/ll_fm3_select"
-                android:visibility="gone"
+
                 >
 
                 <Button
@@ -44,7 +47,7 @@
                     android:layout_width="45dp"
                     android:textSize="20dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/bt_fm3_selectall"
+                    android:id="@+id/bt_fm3add_selectall"
                     android:background="@android:color/holo_green_light"
                     />
 
@@ -62,29 +65,15 @@
                     android:layout_width="45dp"
                     android:layout_height="wrap_content"
                     android:textSize="20dp"
-                    android:id="@+id/bt_fm3_selectnon"
+                    android:id="@+id/bt_fm3add_selectnon"
                     android:background="@android:color/holo_green_light"
                     />
 
             </LinearLayout>
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/rl_fm3_edit"
-            >
-            <ImageButton
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:id="@+id/bt_fm3_plus"
-                android:textSize="20dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:background="@drawable/plus"
-                />
-        </RelativeLayout>
-    </FrameLayout>
 
+        </RelativeLayout>
+
+    </FrameLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -95,8 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:id="@+id/ll_fm3_bottom"
-            android:visibility="gone"
+            android:id="@+id/ll_fm3add_bottom"
             >
 
             <Button
@@ -104,7 +92,7 @@
                 android:textColor="@android:color/white"
                 android:layout_height="50dp"
                 android:text="取消"
-                android:id="@+id/bt_fm3_cancle"
+                android:id="@+id/bt_fm3add_cancle"
                 android:layout_weight="1"
                 />
 
@@ -112,7 +100,7 @@
                 android:layout_width="wrap_content"
                 android:textColor="@android:color/white"
                 android:text="确定"
-                android:id="@+id/bt_fm3_yes"
+                android:id="@+id/bt_fm3add_yes"
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 />
@@ -123,12 +111,13 @@
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
-            android:layout_above="@+id/ll_fm3_bottom"
-            android:id="@+id/lv_fm3"
+            android:layout_above="@+id/ll_fm3add_bottom"
+            android:id="@+id/lv_fm3add"
             />
 
 
     </RelativeLayout>
+
 
 
 </LinearLayout>

@@ -24,6 +24,8 @@
         </activity>
         <activity android:name=".MainActivity"/>
         <activity android:name=".Fm1UploadActivity"></activity>
+        <activity android:name=".NewkeywordActivity"></activity>
+        <activity android:name=".Fm3AddActivity"></activity>
     </application>
 
 </manifest>

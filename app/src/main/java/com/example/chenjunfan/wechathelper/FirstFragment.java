@@ -54,9 +54,9 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
         }
         mAdapter = new Fm1Adapter(getContext(),itembeanList);
         listView.setAdapter(mAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (mAdapter.flag!=true)
                 {
                     mAdapter.flag = true;
@@ -64,6 +64,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                     bottomLL.setVisibility(View.VISIBLE);
                     mAdapter.notifyDataSetChanged();
                 }
+                return false;
             }
         });
 

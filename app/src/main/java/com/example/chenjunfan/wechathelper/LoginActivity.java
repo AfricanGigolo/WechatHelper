@@ -25,7 +25,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         initView();
         loginBT.setOnClickListener(this);
 
-
     }
 
     private void initView() //初始化视图

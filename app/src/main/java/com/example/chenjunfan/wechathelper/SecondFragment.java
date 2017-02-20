@@ -1,5 +1,6 @@
 package com.example.chenjunfan.wechathelper;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -70,6 +71,13 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
                return true;
            }
        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getActivity(),NewkeywordActivity.class);
+                startActivity(intent);
+            }
+        });
 
         //写内容
 
@@ -123,6 +131,10 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
                 }
 
                 mAdapter.notifyDataSetChanged();
+                break;
+            case R.id.bt_fm2_plus:
+                Intent intent = new Intent(getActivity(),NewkeywordActivity.class);
+                startActivity(intent);
                 break;
         }
 
