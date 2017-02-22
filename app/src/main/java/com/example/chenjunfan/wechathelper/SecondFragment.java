@@ -3,6 +3,7 @@ package com.example.chenjunfan.wechathelper;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.RelativeLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import function.Fm1Itembean;
 import function.Fm2Adapter;
 import function.Fm2Itembean;
 
@@ -24,6 +26,10 @@ import function.Fm2Itembean;
  */
 
 public class SecondFragment extends Fragment implements View.OnClickListener {
+    int REQUEST_CODE = 1;
+    int RESULT_OK = 1;
+    int RESULT_NO = 0;
+
     private View rootView;
 
     private Button selectallBT,selectnonBT,deleteBT,cancleBT;
@@ -136,9 +142,37 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
             case R.id.bt_fm2_plus:
                 Intent intent = new Intent(getActivity(),NewkeywordActivity.class);
                 intent.putExtra("title","添加关键词");
-                startActivity(intent);
+                startActivityForResult(intent,REQUEST_CODE);
+                break;
+            case R.id.bt_fm2_delete:
+                for(int i=0;i<itembeanList.size();i++)
+                {
+                    if (itembeanList.get(i).getIscheck())
+                    {
+                        Log.d("SecondFragment", "i:" + i);
+                        itembeanList.remove(i);
+                        i--;
+                    }
+                }
+                mAdapter.notifyDataSetChanged();
                 break;
         }
 
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_CODE)
+        {
+            if(resultCode == RESULT_OK)
+            {
+                Fm2Itembean itembean = data.getParcelableExtra("return");
+                itembeanList.add(0,itembean);
+                mAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+
 }

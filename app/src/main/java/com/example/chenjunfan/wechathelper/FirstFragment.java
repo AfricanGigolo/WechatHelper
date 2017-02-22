@@ -2,6 +2,7 @@ package com.example.chenjunfan.wechathelper;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -115,6 +116,15 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
 
             case R.id.bt_fm1_yes:
                 Intent intent = new Intent(getActivity(),Fm1UploadActivity.class);
+                List<Fm1Itembean> itembeanListTemp = new ArrayList<>();
+                for(int i=0;i<itembeanList.size();i++)
+                {
+                    if(itembeanList.get(i).getIscheck())
+                    {
+                        itembeanListTemp.add(itembeanList.get(i));
+                    }
+                }
+                intent.putParcelableArrayListExtra("checked", (ArrayList<? extends Parcelable>) itembeanListTemp);
                 startActivity(intent);
                 break;
 

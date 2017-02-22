@@ -9,6 +9,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import function.Fm2Itembean;
+
 /**
  * Created by chenjunfan on 2017/2/20.
  */
@@ -53,6 +55,13 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
                 finish();
                 break;
             case R.id.bt_nkw_yes:
+                if(!keywordET.getText().equals("")&&!rightET.getText().equals(""))
+                {
+                    Intent intent = new Intent();
+                    intent.putExtra("return",new Fm2Itembean(keywordET.getText().toString(),Integer.parseInt(rightET.getText().toString())));
+                    setResult(1,intent);
+                    finish();
+                }
                 break;
         }
     }
