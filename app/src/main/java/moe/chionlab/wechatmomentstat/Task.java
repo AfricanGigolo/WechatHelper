@@ -77,7 +77,46 @@ public class Task {
         outputStream.flush();
         outputStream.close();
         Thread.sleep(1000);
+
     }
+
+    public void copyEnDb() throws Throwable {
+        Log.d("Task", "copyEnDB");
+        String dataDir2 = Environment.getDataDirectory().getAbsolutePath();
+        String destDir2 = Config.EXT_DIR;
+        Process su2 = Runtime.getRuntime().exec("su");
+        DataOutputStream outputStream = new DataOutputStream(su2.getOutputStream());
+
+
+        outputStream.writeBytes("mount -o remount,rw " + dataDir2 + "\n");
+        outputStream.writeBytes("cd " + dataDir2 + "/data/" + Config.WECHAT_PACKAGE + "/MicroMsg\n");
+        outputStream.writeBytes("ls | while read line; do cp ${line}/EnMicroMsg.db " + destDir2 + "/ ; done \n");
+        outputStream.writeBytes("sleep 1\n");
+        outputStream.writeBytes("chmod 777 " + destDir2 + "/EnMicroMsg.db\n");
+        outputStream.writeBytes("exit\n");
+        outputStream.flush();
+        outputStream.close();
+//        String []str = new String[]{"",".ini",".sm","vfslo1","vfslog"};
+//        for(int i=0;i<5;i++) {
+//
+//            outputStream = new DataOutputStream(su2.getOutputStream());
+//            outputStream.writeBytes("mount -o remount,rw " + dataDir2 + "\n");
+//            outputStream.writeBytes("cd " + dataDir2 + "/data/" + Config.WECHAT_PACKAGE + "/MicroMsg\n");
+//            outputStream.writeBytes("ls | while read line; do cp ${line}/EnMicroMsg.db" + str[i] + destDir2 + "/ ; done \n");
+//            outputStream.writeBytes("sleep 1\n");
+//            outputStream.writeBytes("chmod 777 " + destDir2 + "/EnMicroMsg.db" + str[i] + "\n");
+//            outputStream.writeBytes("exit\n");
+//            outputStream.flush();
+//            outputStream.close();
+//        }
+            Thread.sleep(1000);
+
+
+
+
+    }
+
+
 
     public void testRoot() {
         try {

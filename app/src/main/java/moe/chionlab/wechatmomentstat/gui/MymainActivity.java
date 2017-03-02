@@ -5,11 +5,25 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import net.sqlcipher.Cursor;
+import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteDatabaseHook;
+import net.sqlcipher.database.SQLiteOpenHelper;
+
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+
+import moe.chionlab.wechatmomentstat.Config;
 import moe.chionlab.wechatmomentstat.Model.UpdataService;
 import moe.chionlab.wechatmomentstat.R;
 import moe.chionlab.wechatmomentstat.SnsStat;
@@ -34,13 +48,19 @@ public class MymainActivity extends Activity {
         task = new Task(this.getApplicationContext());
         task.testRoot();
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                readWeChatDatabase();
+            }
+        }).start();
+
+
         setContentView(R.layout.actitvity_mymain);
         mainTV = (TextView) findViewById(R.id.tv_mymain_tv1);
         button = (Button) findViewById(R.id.bt_mymain_run);
         button.setText("正在获取root");
         button.setEnabled(false);
-
-
 
 
         button.setText("run");
@@ -135,5 +155,59 @@ public class MymainActivity extends Activity {
 //        }
 //    }
     }
+
+    public void readWeChatDatabase( ) {
+
+        Task task = new Task(getBaseContext());
+        task.testRoot();
+        try {
+            task.copyEnDb();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            Log.d("MymainActivity", "已复制EnDB");
+        }
+
+
+        SQLiteDatabase.loadLibs(this);
+
+
+        String password = "XXXXXXX";
+        File databaseFile = getDatabasePath(Config.EXT_DIR+"/EnMicroMsg.db");
+        //File databaseFile = getDatabasePath("EnMicroMsg.db");
+        //eventsData = new myDataHelper(this);
+
+//        if (databaseFile != null) {
+//            Log.d("MymainActivity", "dbFile open!");
+//        }
+
+
+        SQLiteDatabaseHook hook = new SQLiteDatabaseHook() {
+            public void preKey(SQLiteDatabase database) {
+            }
+
+            public void postKey(SQLiteDatabase database) {
+                database.rawExecSQL("PRAGMA cipher_migrate;");  //最关键的一句！！！
+            }
+        };
+
+        try {
+            SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(Config.EXT_DIR+"/EnMicroMsg.db", "04619f4", null, hook);
+            Cursor c = db.query("message", null, null, null, null, null, null);
+
+            while (c.moveToNext()) {
+                int _id = c.getInt(c.getColumnIndex("msgId"));
+                String name = c.getString(c.getColumnIndex("content"));
+                Log.i("db", "_id=>" + _id + ", content=>" + name);
+            }
+            c.close();
+            db.close();
+        } catch (Exception e) {
+
+        }
+    }
+
+
+
+
 }
 

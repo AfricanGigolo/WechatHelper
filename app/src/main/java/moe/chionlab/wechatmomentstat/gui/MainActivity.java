@@ -14,6 +14,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import net.sqlcipher.Cursor;
+import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteDatabaseHook;
+
+import java.io.File;
+
 import moe.chionlab.wechatmomentstat.R;
 import moe.chionlab.wechatmomentstat.SnsStat;
 import moe.chionlab.wechatmomentstat.Task;
@@ -89,6 +95,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+
+
+
 
 
 }
