@@ -1,6 +1,5 @@
 package moe.chionlab.wechatmomentstat.Model;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -9,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -23,10 +21,6 @@ import java.util.Locale;
 import moe.chionlab.wechatmomentstat.R;
 import moe.chionlab.wechatmomentstat.SnsStat;
 import moe.chionlab.wechatmomentstat.Task;
-import moe.chionlab.wechatmomentstat.gui.MainActivity;
-import moe.chionlab.wechatmomentstat.gui.MymainActivity;
-
-import static android.R.id.content;
 
 /**
  * Created by chenjunfan on 2017/3/1.
@@ -58,7 +52,7 @@ public class UpdataService extends Service {
         super.onCreate();
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setContentTitle("微信助手").setContentText("正在后台获取朋友圈数据").setSmallIcon(R.mipmap.ic_launcher);
+        builder.setContentTitle("微信助手").setContentText("正在后台获取朋友圈数据").setSmallIcon(R.drawable.tx);
         Intent notifyIntent = new Intent(this,UpdataService.class);
         PendingIntent notifyPendingIntent = PendingIntent.getActivity(this,0,notifyIntent,PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(notifyPendingIntent);

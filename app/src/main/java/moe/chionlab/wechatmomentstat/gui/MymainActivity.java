@@ -3,9 +3,11 @@ package moe.chionlab.wechatmomentstat.gui;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,13 +19,22 @@ import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteDatabaseHook;
 import net.sqlcipher.database.SQLiteOpenHelper;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import moe.chionlab.wechatmomentstat.Config;
+import moe.chionlab.wechatmomentstat.Model.Md5;
 import moe.chionlab.wechatmomentstat.Model.UpdataService;
 import moe.chionlab.wechatmomentstat.R;
 import moe.chionlab.wechatmomentstat.SnsStat;
@@ -156,29 +167,65 @@ public class MymainActivity extends Activity {
 //    }
     }
 
-    public void readWeChatDatabase( ) {
+    public  void readWeChatDatabase( ) {
 
         Task task = new Task(getBaseContext());
         task.testRoot();
         try {
+            task.copyShared_prefs();
             task.copyEnDb();
         } catch (Throwable throwable) {
             throwable.printStackTrace();
-            Log.d("MymainActivity", "已复制EnDB");
+
         }
+
+        TelephonyManager telephonyManager=(TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+        String imei=telephonyManager.getDeviceId();
+        String uin = null;
+        String password = null;
+        Log.d("MymainActivity", "imei:" + imei);
+        File sharepreFile = new File(Config.EXT_DIR + "/system_config_prefs.xml");
+        try {
+            FileInputStream is = new FileInputStream(sharepreFile);
+            InputStreamReader isr = new InputStreamReader(is,"UTF-8");
+            BufferedReader bfr=new BufferedReader(isr);
+            String in="";
+
+            while((in=bfr.readLine())!=null)
+            {
+                Log.d("MymainActivity", in);
+                if(in.contains("default_uin"))
+                {
+                    String regEx="[^0-9]";
+                    Pattern p = Pattern.compile(regEx);
+                    Matcher m = p.matcher(in);
+                    uin =m.replaceAll("").trim();
+                    Log.d("uin", uin);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Log.d("MymainActivity", "打开system_config_prefs.xml失败");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(uin!=null)
+        {
+
+
+                password =  Md5.getMd5(imei+uin).substring(0,7);
+                Log.d("password", password);
+
+
+        }
+
 
 
         SQLiteDatabase.loadLibs(this);
 
 
-        String password = "XXXXXXX";
-        File databaseFile = getDatabasePath(Config.EXT_DIR+"/EnMicroMsg.db");
-        //File databaseFile = getDatabasePath("EnMicroMsg.db");
-        //eventsData = new myDataHelper(this);
-
-//        if (databaseFile != null) {
-//            Log.d("MymainActivity", "dbFile open!");
-//        }
 
 
         SQLiteDatabaseHook hook = new SQLiteDatabaseHook() {
@@ -186,12 +233,12 @@ public class MymainActivity extends Activity {
             }
 
             public void postKey(SQLiteDatabase database) {
-                database.rawExecSQL("PRAGMA cipher_migrate;");  //最关键的一句！！！
+                database.rawExecSQL("PRAGMA cipher_migrate;");
             }
         };
 
         try {
-            SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(Config.EXT_DIR+"/EnMicroMsg.db", "04619f4", null, hook);
+            SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(Config.EXT_DIR+"/EnMicroMsg.db", password, null, hook);
             Cursor c = db.query("message", null, null, null, null, null, null);
 
             while (c.moveToNext()) {
