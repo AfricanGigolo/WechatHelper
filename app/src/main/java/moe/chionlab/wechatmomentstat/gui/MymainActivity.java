@@ -3,38 +3,14 @@ package moe.chionlab.wechatmomentstat.gui;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteDatabaseHook;
-import net.sqlcipher.database.SQLiteOpenHelper;
-
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import moe.chionlab.wechatmomentstat.Config;
-import moe.chionlab.wechatmomentstat.Model.Md5;
+import moe.chionlab.wechatmomentstat.Model.Manager31;
 import moe.chionlab.wechatmomentstat.Model.UpdataService;
 import moe.chionlab.wechatmomentstat.R;
 import moe.chionlab.wechatmomentstat.SnsStat;
@@ -52,6 +28,7 @@ public class MymainActivity extends Activity {
     UpdataService updataService;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,12 +36,6 @@ public class MymainActivity extends Activity {
         task = new Task(this.getApplicationContext());
         task.testRoot();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                readWeChatDatabase();
-            }
-        }).start();
 
 
         setContentView(R.layout.actitvity_mymain);
@@ -100,6 +71,16 @@ public class MymainActivity extends Activity {
                 }
             }
         });
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Manager31 manager31 = new Manager31(MymainActivity.this);
+                manager31.upload();
+            }
+        }).start();
+
 
 
 //        ((Button) findViewById(R.id.bt_mymain_run)).setOnClickListener(new View.OnClickListener() {
@@ -167,92 +148,9 @@ public class MymainActivity extends Activity {
 //    }
     }
 
-    public  void readWeChatDatabase( ) {
-
-        Task task = new Task(getBaseContext());
-        task.testRoot();
-        try {
-            task.copyShared_prefs();
-            task.copyEnDb();
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-
-        }
-
-        TelephonyManager telephonyManager=(TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-        String imei=telephonyManager.getDeviceId();
-        String uin = null;
-        String password = null;
-        Log.d("MymainActivity", "imei:" + imei);
-        File sharepreFile = new File(Config.EXT_DIR + "/system_config_prefs.xml");
-        try {
-            FileInputStream is = new FileInputStream(sharepreFile);
-            InputStreamReader isr = new InputStreamReader(is,"UTF-8");
-            BufferedReader bfr=new BufferedReader(isr);
-            String in="";
-
-            while((in=bfr.readLine())!=null)
-            {
-                Log.d("MymainActivity", in);
-                if(in.contains("default_uin"))
-                {
-                    String regEx="[^0-9]";
-                    Pattern p = Pattern.compile(regEx);
-                    Matcher m = p.matcher(in);
-                    uin =m.replaceAll("").trim();
-                    Log.d("uin", uin);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            Log.d("MymainActivity", "打开system_config_prefs.xml失败");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if(uin!=null)
-        {
 
 
-                password =  Md5.getMd5(imei+uin).substring(0,7);
-                Log.d("password", password);
-
-
-        }
-
-
-
-        SQLiteDatabase.loadLibs(this);
-
-
-
-
-        SQLiteDatabaseHook hook = new SQLiteDatabaseHook() {
-            public void preKey(SQLiteDatabase database) {
-            }
-
-            public void postKey(SQLiteDatabase database) {
-                database.rawExecSQL("PRAGMA cipher_migrate;");
-            }
-        };
-
-        try {
-            SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(Config.EXT_DIR+"/EnMicroMsg.db", password, null, hook);
-            Cursor c = db.query("message", null, null, null, null, null, null);
-
-            while (c.moveToNext()) {
-                int _id = c.getInt(c.getColumnIndex("msgId"));
-                String name = c.getString(c.getColumnIndex("content"));
-                Log.i("db", "_id=>" + _id + ", content=>" + name);
-            }
-            c.close();
-            db.close();
-        } catch (Exception e) {
-
-        }
-    }
-
+    //password:04619f4
 
 
 

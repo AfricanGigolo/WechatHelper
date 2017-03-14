@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:gravity="center"
+    android:background="@android:color/white"
+    android:id="@+id/ll_fm1item"
+    >
+
+    <TextView
+        android:text="群组x"
+        android:textSize="30dp"
+        android:layout_weight="1"
+        android:textColor="@android:color/black"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_itemfm1_title"
+        android:layout_marginLeft="20dp"
+        />
+
+    <CheckBox
+        android:text=""
+        android:layout_weight="5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkBox_itemfm1_item"
+        android:layout_marginRight="30dp"
+        android:background="@android:color/darker_gray"
+        android:checked="true" />
+</LinearLayout>
