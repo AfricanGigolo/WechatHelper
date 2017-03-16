@@ -1,7 +1,8 @@
 package moe.chionlab.wechatmomentstat.Model;
 
 import android.content.Context;
-import android.os.Looper;
+import android.os.Handler;
+import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -28,12 +29,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import moe.chionlab.wechatmomentstat.Config;
+import moe.chionlab.wechatmomentstat.R;
 import moe.chionlab.wechatmomentstat.Task;
+import moe.chionlab.wechatmomentstat.common.CommonList;
+import moe.chionlab.wechatmomentstat.common.NowUser;
+import moe.chionlab.wechatmomentstat.common.Share;
 
 /**
  * Created by chenjunfan on 2017/3/13.
@@ -45,18 +49,271 @@ public class Manager31 {
     private SQLiteDatabase db = null;
     private Cursor c = null;
 
-    List<Map<String, Object>> recordList;
+
+    List<Map<String,Object>> groupList;
 
     public Manager31(Context context) {
         this.context = context;
     }
 
-    public JSONObject getobj() {
-        return null;
+    public String getJsonStr(List<Map<String, Object>> recordList) {
+        SQLiteDatabase.loadLibs(context);
+
+
+        SQLiteDatabaseHook hook = new SQLiteDatabaseHook() {
+            public void preKey(SQLiteDatabase database) {
+            }
+
+            public void postKey(SQLiteDatabase database) {
+                database.rawExecSQL("PRAGMA cipher_migrate;");
+            }
+        };
+        try {
+            Log.d("Manager31", "开始替换chatroom信息");
+            db = SQLiteDatabase.openOrCreateDatabase(Config.EXT_DIR + "/EnMicroMsg.db",Share.databasePassword, null, hook);
+
+
+            for (int i = 0; i < recordList.size(); i++) {
+                Map<String, Object> map = recordList.get(i);
+
+                if (map.get("sender").toString().contains("chatroom")) {
+                    map.put("chatroomid", map.get("sender"));
+                    map.remove("sender");
+                    String temp = map.get("content").toString();
+                    int end = temp.indexOf(':');
+
+                    if(end!=-1&&end<=20)
+                    {
+                        temp = temp.substring(0,end);
+                    }
+                    else {
+                        temp = NowUser.id; //账户用户名
+                    }
+                    map.put("sender", temp);
+                    String tempContent = map.get("content").toString();
+                    tempContent = tempContent.replace(map.get("content").toString().substring(0, (map.get("content").toString().indexOf(":") + 1)), "");
+                    map.remove("content");
+                    Map<String, String> data = new HashMap<String, String>();
+                    data.put("text", tempContent);
+                    map.put("data", data);
+
+                    c = db.query("rcontact", new String[]{"username", "nickname"}, "username=?", new String[]{map.get("sender").toString()}, null, null, null);
+
+                    if (c.moveToNext()) {
+                        if(end!=-1&&end<=20)
+                        {
+                            map.put("chatroomname", map.get("name"));
+                            map.remove("name");
+                            map.put("name", c.getString(c.getColumnIndex("nickname")));
+                        }
+
+
+                    }
+                    else
+                    {
+                        map.put("chatroomname",map.get("name"));
+                        map.remove("name");
+                        map.put("name", NowUser.id);
+                    }
+                    c.close();
+                } else {
+                    recordList.remove(i);
+                    i--;
+                }
+            }
+
+            db.close();
+
+            for(int i =0;i<recordList.size();i++)
+            {
+                Map<String, Object> map = recordList.get(i);
+                //Log.d("record"+i," "+map.get("chatroomid")+" "+map.get("chatroomname"));
+
+            }
+            Log.d("record","替换chatroom信息完成" );
+
+            //将所有recordList中的chatroom名字列出
+            ArrayList<String> chatroomIdList = new ArrayList<String>();
+            boolean flag = true;
+            for(int i=0;i<recordList.size();i++)
+            {
+
+                Map<String,Object> map = recordList.get(i);
+                flag =false;
+                for(int j=0;j<chatroomIdList.size();j++)
+                {
+                    if(map.get("chatroomid").toString().equals(chatroomIdList.get(j)))
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+                if(flag == false)
+                {
+                    chatroomIdList.add(map.get("chatroomid").toString());
+                }
+            }
+
+//            for(int i = 0;i<chatroomIdList.size();i++)
+//            {
+//                Log.d("chatroomIdList", chatroomIdList.get(i));
+//
+//            }
+            Log.d("record","得到chatroomNameList完成" );
+
+
+            //针对每个名字形成新的dataList，并将当前的dataList和nameList的当前值元素封装成GroupList;
+
+            ArrayList<Map<String,Object>> groupList2 = new ArrayList<Map<String, Object>>();
+            for(int i=0;i<chatroomIdList.size();i++)
+            {
+
+                ArrayList<Map<String,Object>> dataList = new ArrayList<Map<String, Object>>();
+                String id = chatroomIdList.get(i);
+//                Log.d("i", i+"");
+                for(int j =0;j<recordList.size();j++)
+                {
+//                    System.out.println(i+" "+j+"   "+recordList.get(j).get("chatroomid").toString());
+                    if(recordList.get(j).get("chatroomid").toString().equals(id))
+                    {
+
+
+                        dataList.add(recordList.get(j));
+
+                    }
+                }
+
+//                Log.d("go", "1");
+                Map<String,Object> groupmap = new HashMap<String,Object>();
+//                Log.d("groupmap"+i,""+dataList.get(0).get("chatroomid"));
+//                Log.d("groupmap"+i,""+dataList.get(0).get("chatroomname"));
+
+                for(int j=0;j<dataList.size();j++)
+                {
+
+                        groupmap.put("group",dataList.get(j).get("chatroomid"));
+                        groupmap.put("name",dataList.get(j).get("chatroomname"));
+
+
+                }
+
+//                Log.d("go", "2");
+
+                for(int k=0;k<dataList.size();k++)
+                {
+//                    Log.d("k", "" + k);
+                    Map<String,Object> map = dataList.get(k);
+//                    Log.d("map"+k, map.get("chatroomid").toString()+" "+map.get("chatroomname"));
+                    Map<String,Object> map2 = new HashMap<String,Object>();
+
+//                    map.remove("chatroomid");
+//                    map.remove("chatroomname");
+                    map2.put("code",map.get("code"));
+                    map2.put("sender",map.get("sender"));
+                    map2.put("name",map.get("name"));
+                    map2.put("timestamp",map.get("timestamp"));
+                    map2.put("order",map.get("order"));
+                    map2.put("data",map.get("data"));
+
+                    dataList.set(k,map2);
+                }
+//                Log.d("go", "\n3");
+
+                groupmap.put("chat_records",dataList);
+                groupList2.add(groupmap);
+
+                Log.d("groupmap"+i,groupmap.get("group")+" "+groupmap.get("name"));
+//                Log.d("go", "4");
+
+            }
+
+
+            Map<String,Object> data = new HashMap<String,Object>();
+            data.put("id", NowUser.id);
+            data.put("groups",groupList2);
+            Map<String,Object> jsonmap = new HashMap<>();
+            jsonmap.put("code",31);
+            jsonmap.put("data",data);
+//            JSONObject jsonObject = new JSONObject();
+//            jsonObject.put("code","31");
+//            jsonObject.put("data",data);
+
+            String retvalue =new Gson().toJson(jsonmap);
+            Log.d("Manager31.togson", retvalue);
+            return retvalue;
+
+        } catch (Exception e) {
+
+        }
+        return "";
+
     }
 
-    private String readDatabaseText() {
 
+
+
+
+
+
+
+    public void upload() {
+
+// TODO Auto-generated method stub
+//        Looper.prepare();
+        final String urlPath ="http://192.168.1.116:8080"
+        +"/ChatDetection/uploadServlet";
+        Log.d("url", urlPath);
+        URL url;
+        try {
+            url = new URL(urlPath);
+/*封装子对象*/
+
+            String content = getJsonStr(new ReadDatabase(context).readDatabaseText());
+
+            if(content.equals(""))
+            {
+                Log.d("错误", "Manager31转换json错误");
+                return;
+            }
+            System.out.println(content);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(5000);
+            conn.setDoOutput(true);//设置允许输出
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("User-Agent", "Fiddler");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Charset", "UTF-8");
+            OutputStream os = conn.getOutputStream();
+            os.write(content.getBytes());
+            os.close();
+/*服务器返回的响应码*/
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
+            String retData = null;
+            String responseData = "";
+            while ((retData = in.readLine()) != null) {
+                responseData += retData;
+            }
+
+            Toast.makeText(context,"收到："+ responseData, Toast.LENGTH_SHORT).show();
+            Log.d("response", responseData);
+
+
+        } catch (Exception e) {
+// TODO: handle exception
+            Log.d("response", "连接网络失败");
+            Toast.makeText(context,"连接网络失败", Toast.LENGTH_SHORT).show();
+
+
+
+        }
+//        Looper.loop();
+    }
+
+
+
+    public void getGroupList(Handler handler)
+    {
         Task task = new Task(context);
         task.testRoot();
         try {
@@ -66,7 +323,6 @@ public class Manager31 {
             throwable.printStackTrace();
 
         }
-
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String imei = telephonyManager.getDeviceId();
         String uin = null;
@@ -118,143 +374,60 @@ public class Manager31 {
                 database.rawExecSQL("PRAGMA cipher_migrate;");
             }
         };
-
-        recordList = new ArrayList<Map<String, Object>>();
-
-
         try {
 
             db = SQLiteDatabase.openOrCreateDatabase(Config.EXT_DIR + "/EnMicroMsg.db", password, null, hook);
 
-            c = db.query("message", null, "msgId>=0 and msgId<=50", null, null, null, null);
-            int i = 1;
-            while (c.getCount() != 0) {
+            c = db.query("chatroom",new String[]{"chatroomname"}, null, null, null, null, null);
+            groupList = new ArrayList<>();
+
                 while (c.moveToNext()) {
                     Map<String, Object> map = new HashMap<String, Object>();
-                    int _id = c.getInt(c.getColumnIndex("msgId"));
-                    String content = c.getString(c.getColumnIndex("content"));
-                    String talker = c.getString(c.getColumnIndex("talker"));
-                    String status = "" + c.getInt(c.getColumnIndex("status"));
-                    String type = "" + c.getInt(c.getColumnIndex("type"));
-                    String createTime = "" + c.getLong(c.getColumnIndex("createTime"));
-                    if (!type.equals("1"))
-                        continue;
 
-                    map.put("sender", talker);
-                    map.put("code", "0");
-                    Map<String, String> data = new HashMap<String, String>();
-                    data.put("text", content);
-                    map.put("data", data);
-                    map.put("timestamp", createTime);
-                    map.put("order", _id + "");
-                    if (status.equals("2")) {
-                        map.put("name", "我");
-
-                    } else {
-                        map.put("name", "");
-                    }
-                    map.put("status", status);
-
-                    recordList.add(map);
-                    //Log.i("db", i+"_id=>" + _id +" talker=>"+talker+ ", content=>" + name);
+                    String content = c.getString(c.getColumnIndex("chatroomname"));
+                    Log.d("group", content);
+                    map.put("chatroomname",content);
+                    groupList.add(map);
                 }
                 c.close();
-                c = db.query("message", null, "msgId>=" + i * 50 + " and msgId<=" + (i + 1) * 50, null, null, null, null);
 
 
-                i++;
 
-            }
+            for (int i = 0; i < groupList.size(); i++) {
+                Map<String, Object> map = groupList.get(i);
+                c = db.query("rcontact", new String[]{"username", "nickname"}, "username=?", new String[]{map.get("chatroomname").toString()}, null, null, null);
 
-            c.close();
-
-            for (i = 0; i < recordList.size(); i++) {
-                Map<String, Object> map = recordList.get(i);
-                if (map.get("name").equals("我"))
-                    continue;
-                else {
-                    c = db.query("rcontact", new String[]{"username", "nickname"}, "username=?", new String[]{map.get("sender").toString()}, null, null, null);
-
-                    if (c.moveToNext()) {
-                        //System.out.println("\n find \n");
-                        map.remove("name");
-                        map.put("name", c.getString(c.getColumnIndex("nickname")));
-                        recordList.set(i, map);
-                    }
-
-//                    System.out.print("\n\n\n\n\n");
-//                    while(c.moveToNext())
-//                    {
-//                        System.out.println(c.getString(c.getColumnIndex("username"))+c.getString(c.getColumnIndex("nickname")));
-//                    }
-//                    System.out.print("\n\n\n\n");
-                    c.close();
+                if (c.moveToNext()) {
+                    //System.out.println("\n find \n");
+                    map.put("name", c.getString(c.getColumnIndex("nickname")));
+                    groupList.set(i, map);
                 }
 
             }
-
-
+            c.close();
             db.close();
+            CommonList.groupList = groupList;
+            Message msg = new Message();
+            msg.what = 1;
+            handler.sendMessage(msg);
 
 
-        } catch (Exception e) {
 
 
-        }
 
-
-        for (int j = 0; j < recordList.size(); j++) {
-            Map<String, Object> map = recordList.get(j);
-
-            Log.d(j + " ", map.get("order") + " " + map.get("sender") + " " + map.get("name") + " " + map.get("content"));
-
-        }
-        Log.d("MymainActivity", "没有了");
-
-        Gson gson = new Gson();
-        String ret = gson.toJson(recordList);
-        return ret;
-    }
-
-    public void upload() {
-
-// TODO Auto-generated method stub
-//        Looper.prepare();
-        final String urlPath = "http://58.213.141.235:8080/qmjs_FEP/datewalk/createSportTrack.action";
-        URL url;
-        try {
-            url = new URL(urlPath);
-/*封装子对象*/
-
-            String content = readDatabaseText();
-            Log.d("update", content);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(5000);
-            conn.setDoOutput(true);//设置允许输出
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("User-Agent", "Fiddler");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Charset", "UTF-8");
-            OutputStream os = conn.getOutputStream();
-            os.write(content.getBytes());
-            os.close();
-/*服务器返回的响应码*/
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
-            String retData = null;
-            String responseData = "";
-            while ((retData = in.readLine()) != null) {
-                responseData += retData;
+            for(int i=0;i<groupList.size();i++)
+            {
+                Map<String, Object> map = groupList.get(i);
+                Log.d("chatroom",  map.get("chatroomname").toString()+map.get("name").toString());
             }
 
-            Toast.makeText(context, responseData, Toast.LENGTH_SHORT).show();
 
-
-        } catch (Exception e) {
-// TODO: handle exception
-            throw new RuntimeException(e);
         }
-//        Looper.loop();
+         catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 

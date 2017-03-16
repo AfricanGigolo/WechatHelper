@@ -8,4 +8,5 @@ import moe.chionlab.wechatmomentstat.SnsStat;
  */
 public class Share {
     static public SnsStat snsData = null;
+    static public String databasePassword=null;
 }

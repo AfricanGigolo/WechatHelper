@@ -5,12 +5,14 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import moe.chionlab.wechatmomentstat.Model.Manager31;
+import moe.chionlab.wechatmomentstat.Model.ReadDatabase;
 import moe.chionlab.wechatmomentstat.Model.UpdataService;
 import moe.chionlab.wechatmomentstat.R;
 import moe.chionlab.wechatmomentstat.SnsStat;
@@ -76,8 +78,11 @@ public class MymainActivity extends Activity {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Looper.prepare();
                 Manager31 manager31 = new Manager31(MymainActivity.this);
                 manager31.upload();
+//                manager31.getGroupList();
+                Looper.loop();
             }
         }).start();
 

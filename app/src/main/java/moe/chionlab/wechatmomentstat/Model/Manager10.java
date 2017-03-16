@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,25 +13,33 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.acl.Group;
+import java.util.ArrayList;
+import java.util.Map;
+
+import moe.chionlab.wechatmomentstat.common.NowUser;
+
 
 /**
  * Created by chenjunfan on 2017/3/14.
+ * 获取已设置为自动上传的群组模块
  */
 
-public class Manager00 {
+public class Manager10 {
     Context context;
     Handler handler;
 
-    public Manager00(Context context,Handler handler) {
+    public Manager10(Context context, Handler handler) {
         this.context = context;
         this.handler = handler;
     }
 
-    public void upload(String account, String password) throws JSONException {
-        JSONObject json1 = new JSONObject();
-        json1.put("account", account);
-        json1.put("password", password);
-        String str = new JSONObject().put("code", 00).put("data", json1).toString();
+
+    public void upload() throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code","10");
+        jsonObject.put("data",new JSONObject().put("id", NowUser.id));
+        String str = jsonObject.toString();
 
         final String urlPath = "http://58.213.141.235:8080/qmjs_FEP/datewalk/createSportTrack.action";
         URL url;
@@ -63,15 +70,10 @@ public class Manager00 {
             }
             JSONObject retJson = new JSONObject();
             retJson.getJSONObject(responseData);
+            Map<String,Object> datamap= (Map<String, Object>) retJson.get("data");
+            ArrayList<Group> groups = (ArrayList<Group>) datamap.get("groups");
             Message message = new Message();
-            if(retJson.get("code").toString().equals("1"))
-            {
-                message.what=Integer.parseInt(retJson.get("is_admin").toString());
-                message.obj=retJson.get("user_id");
-                handler.sendMessage(message);
-            }
-            else
-                handler.sendEmptyMessage(-1);
+            handler.sendEmptyMessage(-1);
 
 
 
@@ -79,7 +81,11 @@ public class Manager00 {
 // TODO: handle exception
             throw new RuntimeException(e);
         }
-//        Looper.loop();
-    }
-}
 
+    }
+
+
+
+
+
+}
