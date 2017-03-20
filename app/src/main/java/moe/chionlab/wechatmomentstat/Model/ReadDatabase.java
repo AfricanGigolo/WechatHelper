@@ -3,6 +3,7 @@ package moe.chionlab.wechatmomentstat.Model;
 import android.content.Context;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -17,14 +18,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import moe.chionlab.wechatmomentstat.Config;
+import moe.chionlab.wechatmomentstat.R;
+import moe.chionlab.wechatmomentstat.SnsStat;
 import moe.chionlab.wechatmomentstat.Task;
 import moe.chionlab.wechatmomentstat.common.Share;
 
@@ -200,6 +206,58 @@ public class ReadDatabase {
         Log.d("MymainActivity", "读取数据库完");
 
        return recordList;
+    }
+
+    public List<Map<String, Object>> readSnsDatabaseText()
+    {
+        Task task = null;
+        SnsStat snsStat = null;
+
+        task = new Task(context.getApplicationContext());
+
+
+        try {
+            task.copySnsDB();
+            task.initSnsReader();
+            task.snsReader.run();
+            snsStat = new SnsStat(task.snsReader.getSnsList());
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            Toast.makeText(context, R.string.not_rooted, Toast.LENGTH_LONG).show();
+            Log.e("wechatmomentstat", "exception");
+        }
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        String str = "";
+        try {
+            for(int i=0;i<snsStat.snsList.size();i++) {
+                Map<String,Object> map = new HashMap<>();
+                SnsInfo snsInfo = snsStat.snsList.get(i);
+
+                str = str + "第" + (i + 1) + "条:\n"
+                        + "用户名:" + snsInfo.authorId
+                        + "\n昵称:" + snsInfo.authorName
+                        + "\n时间:" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault()).format(new Date(snsInfo.timestamp * 1000)) +
+                        "\n内容:" + snsInfo.content + "\n\n";
+                map.put("code",0);
+                map.put("sender",snsInfo.authorId);
+                map.put("name",snsInfo.authorName);
+                map.put("timestamp",snsInfo.timestamp);
+                map.put("order",0);
+                Map<String,Object> textmap = new HashMap<>();
+                textmap.put("text",snsInfo.content);
+                map.put("data",textmap);
+                dataList.add(map);
+        }
+
+
+
+        }
+        catch (Exception e)
+        {
+
+        }
+        Log.d("Snsdata", str);
+        return dataList;
     }
 
 }

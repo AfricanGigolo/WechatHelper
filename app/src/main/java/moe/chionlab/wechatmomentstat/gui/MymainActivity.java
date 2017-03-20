@@ -5,13 +5,16 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import moe.chionlab.wechatmomentstat.Model.Manager31;
+import moe.chionlab.wechatmomentstat.Model.Manager32;
 import moe.chionlab.wechatmomentstat.Model.ReadDatabase;
 import moe.chionlab.wechatmomentstat.Model.UpdataService;
 import moe.chionlab.wechatmomentstat.R;
@@ -73,16 +76,63 @@ public class MymainActivity extends Activity {
                 }
             }
         });
+        final Handler handler = new Handler()
+        {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                switch (msg.what)
+                {
+                    case 31:
+                        if (msg.obj.equals("0"))
+                        {
+                            Toast.makeText(MymainActivity.this, "上传文字聊天记录失败！", Toast.LENGTH_SHORT).show();
+                        }
+                        else if(msg.obj.equals("1"))
+                        {
+                            Toast.makeText(MymainActivity.this, "上传文字聊天记录成功", Toast.LENGTH_SHORT).show();
+                        }
+                        else
+                        {
+                            Toast.makeText(MymainActivity.this, "上传文字聊天记录:无法连接网络", Toast.LENGTH_SHORT).show();
+
+                        }
+                        break;
+                    case 32:
+                        if (msg.obj.equals("0"))
+                        {
+                            Toast.makeText(MymainActivity.this, "上传朋友圈记录失败！", Toast.LENGTH_SHORT).show();
+                        }
+                        else if(msg.obj.equals("1"))
+                        {
+                            Toast.makeText(MymainActivity.this, "上传朋友圈记录成功！", Toast.LENGTH_SHORT).show();
+                        }
+                        else{
+                            Toast.makeText(MymainActivity.this, "上传朋友圈记录:无法连接网络！", Toast.LENGTH_SHORT).show();
+
+                        }
+
+                            break;
+                }
+            }
+        };
 
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Looper.prepare();
-                Manager31 manager31 = new Manager31(MymainActivity.this);
+
+                Manager31 manager31 = new Manager31(MymainActivity.this,handler);
                 manager31.upload();
-//                manager31.getGroupList();
-                Looper.loop();
+
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Manager32 manager32 = new Manager32(MymainActivity.this,handler);
+                manager32.upload();
             }
         }).start();
 

@@ -94,15 +94,8 @@ public class UpdataService extends Service {
                     Toast.makeText(UpdataService.this, R.string.not_rooted, Toast.LENGTH_LONG).show();
                     Log.e("wechatmomentstat", "exception", this.error);
 
-//                try {
-//                    ((TextView) findViewById(R.id.description_textview_2)).setText("Error: " + this.error.getMessage());
-//                } catch (Throwable e) {
-//                    Log.e("wechatmomentstat", "exception", e);
-//                }
-
                     return;
                 }
-//            Share.snsData = snsStat;
                 String str = "";
                 for(int i=0;i<snsStat.snsList.size();i++) {
                     SnsInfo snsInfo = snsStat.snsList.get(i);
@@ -116,10 +109,7 @@ public class UpdataService extends Service {
             }
         }
 
-//        new Thread(new Runnable() {
-//
-//            @Override
-//            public void run() {
+
 
         new Thread(new Runnable() {
             @Override
@@ -139,12 +129,6 @@ public class UpdataService extends Service {
             }
         }).start();
 
-
-
-
-
-//            }
-//        }).start();
         return super.onStartCommand(intent, flags, startId);
     }
 

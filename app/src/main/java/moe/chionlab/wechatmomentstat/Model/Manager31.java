@@ -2,6 +2,7 @@ package moe.chionlab.wechatmomentstat.Model;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -48,15 +49,17 @@ public class Manager31 {
     private Context context;
     private SQLiteDatabase db = null;
     private Cursor c = null;
+    Handler handler;
 
 
     List<Map<String,Object>> groupList;
 
-    public Manager31(Context context) {
+    public Manager31(Context context, Handler handler) {
         this.context = context;
+        this.handler = handler;
     }
 
-    public String getJsonStr(List<Map<String, Object>> recordList) {
+    private String getJsonStr(List<Map<String, Object>> recordList) {
         SQLiteDatabase.loadLibs(context);
 
 
@@ -259,7 +262,7 @@ public class Manager31 {
     public void upload() {
 
 // TODO Auto-generated method stub
-//        Looper.prepare();
+        Looper.prepare();
         final String urlPath ="http://192.168.1.116:8080"
         +"/ChatDetection/uploadServlet";
         Log.d("url", urlPath);
@@ -275,7 +278,7 @@ public class Manager31 {
                 Log.d("错误", "Manager31转换json错误");
                 return;
             }
-            System.out.println(content);
+            LogUtil.e("",content);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(5000);
             conn.setDoOutput(true);//设置允许输出
@@ -295,24 +298,30 @@ public class Manager31 {
                 responseData += retData;
             }
 
-            Toast.makeText(context,"收到："+ responseData, Toast.LENGTH_SHORT).show();
-            Log.d("response", responseData);
+            Message msg = new Message();
+            msg.what=31;
+            msg.obj = new JSONObject().getJSONObject(responseData).get("code");
+            handler.sendMessage(msg);
 
 
         } catch (Exception e) {
 // TODO: handle exception
             Log.d("response", "连接网络失败");
-            Toast.makeText(context,"连接网络失败", Toast.LENGTH_SHORT).show();
+            Message msg = new Message();
+            msg.what=31;
+            msg.obj = "2";
+            handler.sendMessage(msg);
+
 
 
 
         }
-//        Looper.loop();
+        Looper.loop();
     }
 
 
 
-    public void getGroupList(Handler handler)
+    public void getGroupList()
     {
         Task task = new Task(context);
         task.testRoot();
