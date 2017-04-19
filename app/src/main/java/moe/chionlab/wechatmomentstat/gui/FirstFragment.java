@@ -3,8 +3,13 @@ package moe.chionlab.wechatmomentstat.gui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.Parcelable;
+import android.support.annotation.RequiresPermission;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +18,21 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-
+import android.widget.Toast;
 
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 import moe.chionlab.wechatmomentstat.Model.Fm1Adapter;
 import moe.chionlab.wechatmomentstat.Model.Fm1Itembean;
+import moe.chionlab.wechatmomentstat.Model.Manager31;
+import moe.chionlab.wechatmomentstat.Model.ReadDatabase;
 import moe.chionlab.wechatmomentstat.R;
+import moe.chionlab.wechatmomentstat.common.ProgressBarCycle;
+import moe.chionlab.wechatmomentstat.common.Share;
 
 /**
  * Created by chenjunfan on 2017/2/14.
@@ -35,9 +45,9 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
 
     private ListView listView;
 
-    private List<Fm1Itembean> itembeanList;
+
     private Fm1Adapter mAdapter;
-    LinearLayout selectLL,bottomLL;
+    private LinearLayout selectLL,bottomLL;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -52,13 +62,14 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
         initView(rootView);
 
         //写内容
-        itembeanList = new ArrayList<Fm1Itembean>();
 
-        for(int i=0;i<20;i++)
-        {
-            itembeanList.add(new Fm1Itembean("群组"+(i+1)));
-        }
-        mAdapter = new Fm1Adapter(getContext(),itembeanList);
+
+        
+
+
+
+
+        mAdapter = new Fm1Adapter(getContext(),Share.fm1ItembeanList);
         listView.setAdapter(mAdapter);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -74,6 +85,22 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                 return false;
             }
         });
+//        final Handler handler = new Handler(){
+//            @Override
+//            public void handleMessage(Message msg) {
+//                super.handleMessage(msg);
+//                switch (msg.what)
+//                {
+//                    case 11:
+//                        mAdapter.notifyDataSetChanged();
+//                        ProgressBarCycle.cancleProgressBar();
+//                        break;
+//
+//                }
+//            }
+//        };
+
+
 
         return rootView;
     }
@@ -101,18 +128,18 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
         switch (view.getId())
         {
             case R.id.bt_fm1_selectall:
-                for (int i = 0; i < itembeanList.size(); i++) {
-                    itembeanList.get(i).setIscheck(true);
+                for (int i = 0; i < Share.fm1ItembeanList.size(); i++) {
+                    Share.fm1ItembeanList.get(i).setIscheck(true);
                 }
                     mAdapter.notifyDataSetChanged();
                 break;
 
             case R.id.bt_fm1_selectnon:
-                for (int i = 0; i < itembeanList.size(); i++) {
-                    if (itembeanList.get(i).getIscheck()) {
-                        itembeanList.get(i).setIscheck(false);
+                for (int i = 0; i < Share.fm1ItembeanList.size(); i++) {
+                    if (Share.fm1ItembeanList.get(i).getIscheck()) {
+                        Share.fm1ItembeanList.get(i).setIscheck(false);
                     } else {
-                        itembeanList.get(i).setIscheck(true);
+                        Share.fm1ItembeanList.get(i).setIscheck(true);
                     }
                 }
 
@@ -122,11 +149,11 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
             case R.id.bt_fm1_yes:
                 Intent intent = new Intent(getActivity(),Fm1UploadActivity.class);
                 List<Fm1Itembean> itembeanListTemp = new ArrayList<>();
-                for(int i=0;i<itembeanList.size();i++)
+                for(int i=0;i<Share.fm1ItembeanList.size();i++)
                 {
-                    if(itembeanList.get(i).getIscheck())
+                    if(Share.fm1ItembeanList.get(i).getIscheck())
                     {
-                        itembeanListTemp.add(itembeanList.get(i));
+                        itembeanListTemp.add(Share.fm1ItembeanList.get(i));
                     }
                 }
                 intent.putParcelableArrayListExtra("checked", (ArrayList<? extends Parcelable>) itembeanListTemp);

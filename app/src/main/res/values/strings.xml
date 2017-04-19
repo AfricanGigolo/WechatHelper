@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">WeChatMomentStat</string>
+    <string name="app_name">WeChatHelper</string>
     <string name="ip_address">http://192.168.1.116:8080</string>
 </resources>

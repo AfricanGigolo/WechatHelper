@@ -9,7 +9,9 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -22,6 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import moe.chionlab.wechatmomentstat.common.NowUser;
+import moe.chionlab.wechatmomentstat.common.Share;
 
 /**
  * Created by chenjunfan on 2017/3/20.
@@ -40,19 +45,24 @@ public class Manager32 {
     {
         Log.d("getJsonSta","开始"+dataList.size());
         Map<String,Object> map =new HashMap<String,Object>();
-        for (int i=0;i<dataList.size();i++)
-        {
-            Log.d("in", "in"+i);
-//            Log.d("snsdata:", "第" + (i + 1) + "条:\n"
-//                    + "用户名:" + dataList.get(i).get("sender")
-//                    + "\n昵称:" + dataList.get(i).get("name")
-//                    + "\n时间:" + dataList.get(i).get("timestamp") +
-//                    "\n内容:" + ((HashMap)dataList.get(i).get("data")).get("text") + "\n\n");
-        }
-        map.put("sns_records",dataList);
-        map.put("code",32);
+//        for (int i=0;i<dataList.size();i++)
+//        {
+////            Log.d("in", "in"+i);
+////            Log.d("snsdata:", "第" + (i + 1) + "条:\n"
+////                    + "用户名:" + dataList.get(i).get("sender")
+////                    + "\n昵称:" + dataList.get(i).get("name")
+////                    + "\n时间:" + dataList.get(i).get("timestamp") +
+////                    "\n内容:" + ((HashMap)dataList.get(i).get("data")).get("text") + "\n\n");
+//        }
+        map.put("chat_records",dataList);
+        map.put("id", NowUser.id);
+        Map<String,Object> map2 = new HashMap<>();
+
+        map2.put("data",map);
+        map2.put("code",32);
+
         Gson gson = new Gson();
-        String str = gson.toJson(map);
+        String str = gson.toJson(map2);
         LogUtil.e("",str);
         return str;
     }
@@ -63,7 +73,7 @@ public class Manager32 {
 
 // TODO Auto-generated method stub
         Looper.prepare();
-        final String urlPath ="http://192.168.1.116:8080"
+        final String urlPath = Share.IP_ADDRESS
                 +"/ChatDetection/uploadServlet";
         Log.d("url", urlPath);
         URL url;
@@ -98,23 +108,21 @@ public class Manager32 {
                 responseData += retData;
             }
 
-            Toast.makeText(context,"收到："+ responseData, Toast.LENGTH_SHORT).show();
-            Log.d("response", responseData);
+            //Toast.makeText(context,"收到："+ responseData, Toast.LENGTH_SHORT).show();
+            Log.d("responsData", responseData);
             Message msg = new Message();
             msg.what=32;
-            JSONObject jobj= new JSONObject();
-            jobj.getJSONObject(responseData);
-
-            msg.obj = jobj.get("code");
+            JSONTokener jsonTokener = new JSONTokener(responseData);
+            msg.obj=((JSONObject)jsonTokener.nextValue()).getString("code");
             handler.sendMessage(msg);
 
 
         } catch (Exception e) {
 // TODO: handle exception
+            e.printStackTrace();
             Log.d("response", "连接网络失败");
             Message msg = new Message();
             msg.what=32;
-            JSONObject jobj= new JSONObject();
             msg.obj = "2";
             handler.sendMessage(msg);
 

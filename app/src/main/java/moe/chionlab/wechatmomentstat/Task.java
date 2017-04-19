@@ -127,7 +127,7 @@ public class Task {
             outputStream.flush();
             outputStream.close();
         } catch (Exception e) {
-            Toast.makeText(context, R.string.not_rooted, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "设备没有root权限，请获取root权限再试", Toast.LENGTH_LONG).show();
         }
     }
 

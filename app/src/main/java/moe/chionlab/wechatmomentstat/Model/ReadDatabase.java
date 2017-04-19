@@ -223,21 +223,23 @@ public class ReadDatabase {
             snsStat = new SnsStat(task.snsReader.getSnsList());
         } catch (Throwable throwable) {
             throwable.printStackTrace();
-            Toast.makeText(context, R.string.not_rooted, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "设备没有root权限，请获取root权限再试", Toast.LENGTH_LONG).show();
             Log.e("wechatmomentstat", "exception");
         }
         List<Map<String, Object>> dataList = new ArrayList<>();
-        String str = "";
+        //String str = "";
         try {
             for(int i=0;i<snsStat.snsList.size();i++) {
                 Map<String,Object> map = new HashMap<>();
                 SnsInfo snsInfo = snsStat.snsList.get(i);
 
-                str = str + "第" + (i + 1) + "条:\n"
+                String str =  "第" + (i + 1) + "条:\n"
                         + "用户名:" + snsInfo.authorId
                         + "\n昵称:" + snsInfo.authorName
                         + "\n时间:" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault()).format(new Date(snsInfo.timestamp * 1000)) +
                         "\n内容:" + snsInfo.content + "\n\n";
+
+                Log.d("ReadDatabase"+i, str);
                 map.put("code",0);
                 map.put("sender",snsInfo.authorId);
                 map.put("name",snsInfo.authorName);
@@ -256,7 +258,7 @@ public class ReadDatabase {
         {
 
         }
-        Log.d("Snsdata", str);
+        //Log.d("Snsdata", str);
         return dataList;
     }
 

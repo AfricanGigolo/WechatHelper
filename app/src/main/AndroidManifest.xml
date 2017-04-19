@@ -16,22 +16,35 @@
         android:theme="@style/Theme.AppCompat.NoActionBar">
         <activity android:name=".gui.MymainActivity"
             android:label="微信助手"
+            android:screenOrientation="portrait"
 
             >
+
+
+        </activity>
+        <activity
+            android:name=".gui.LoginActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            >
+
+        </activity>
+        <activity android:name=".gui.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".gui.LoginActivity"
-            android:label="@string/app_name">
-
-        </activity>
-        <activity android:name=".gui.MainActivity"/>
-        <activity android:name=".gui.Fm1UploadActivity"></activity>
-        <activity android:name=".gui.NewkeywordActivity"></activity>
-        <activity android:name=".gui.Fm3AddActivity"></activity>
+        <activity android:name=".gui.Fm1UploadActivity"
+            android:screenOrientation="portrait"
+            ></activity>
+        <activity android:name=".gui.NewkeywordActivity"
+            android:screenOrientation="portrait"
+            ></activity>
+        <activity android:name=".gui.Fm3AddActivity"
+            android:screenOrientation="portrait"
+            ></activity>
         <service android:name=".Model.UpdataService"></service>
 
 

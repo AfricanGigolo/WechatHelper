@@ -10,19 +10,9 @@ import android.os.Parcelable;
 
 public class Fm1Itembean implements Parcelable {
     private String title;
+    private String id;
     private boolean ischeck;
 
-    public boolean getIscheck() {
-        return ischeck;
-    }
-
-    public void setIscheck(boolean ischeck) {
-        this.ischeck = ischeck;
-    }
-
-    public Fm1Itembean(String title) {
-        this.title = title;
-    }
 
     public String getTitle() {
         return title;
@@ -30,6 +20,22 @@ public class Fm1Itembean implements Parcelable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public boolean getIscheck() {
+        return ischeck;
+    }
+
+    public void setIscheck(boolean ischeck) {
+        this.ischeck = ischeck;
     }
 
     @Override
@@ -40,11 +46,16 @@ public class Fm1Itembean implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.title);
+        dest.writeString(this.id);
         dest.writeByte(this.ischeck ? (byte) 1 : (byte) 0);
+    }
+
+    public Fm1Itembean() {
     }
 
     protected Fm1Itembean(Parcel in) {
         this.title = in.readString();
+        this.id = in.readString();
         this.ischeck = in.readByte() != 0;
     }
 

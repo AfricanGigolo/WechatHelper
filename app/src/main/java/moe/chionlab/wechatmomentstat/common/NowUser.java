@@ -5,6 +5,6 @@ package moe.chionlab.wechatmomentstat.common;
  */
 
 public class NowUser {
-    public static String id = "0";
+    public static String id = "1";
     public static boolean is_admin = false;
 }

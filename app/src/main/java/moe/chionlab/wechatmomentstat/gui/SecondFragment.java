@@ -2,6 +2,8 @@ package moe.chionlab.wechatmomentstat.gui;
 
 
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +24,10 @@ import java.util.List;
 
 import moe.chionlab.wechatmomentstat.Model.Fm2Adapter;
 import moe.chionlab.wechatmomentstat.Model.Fm2Itembean;
+import moe.chionlab.wechatmomentstat.Model.Manager24;
 import moe.chionlab.wechatmomentstat.R;
+import moe.chionlab.wechatmomentstat.common.ProgressBarCycle;
+import moe.chionlab.wechatmomentstat.common.Share;
 
 /**
  * Created by chenjunfan on 2017/2/14.
@@ -31,6 +37,7 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
     int REQUEST_CODE = 1;
     int RESULT_OK = 1;
     int RESULT_NO = 0;
+    int REFRESH = 2;
 
     private View rootView;
 
@@ -40,8 +47,7 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
     private ListView listView;
     RelativeLayout selectRL;
     LinearLayout bottomLL;
-
-    private List<Fm2Itembean> itembeanList;
+    
     private Fm2Adapter mAdapter;
 
     @Override
@@ -54,13 +60,9 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
             parent.removeView(rootView);
         }
         initView(rootView);
-        itembeanList = new ArrayList<>();
-        for(int i=0;i<20;i++)
-        {
-            itembeanList.add(new Fm2Itembean("关键词"+(i+1),i+1));
-        }
 
-        mAdapter = new Fm2Adapter(getContext(),itembeanList);
+
+        mAdapter = new Fm2Adapter(getContext(),Share.fm2ItembeanList);
         listView.setAdapter(mAdapter);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
            @Override
@@ -84,6 +86,8 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getActivity(),NewkeywordActivity.class);
                 intent.putExtra("title","编辑关键词");
+                intent.putExtra("type","edit");
+                intent.putExtra("No",i);
                 startActivity(intent);
             }
         });
@@ -124,18 +128,18 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
                 mAdapter.notifyDataSetChanged();
                 break;
             case R.id.bt_fm2_selectall:
-                for (int i = 0; i < itembeanList.size(); i++) {
-                    itembeanList.get(i).setIscheck(true);
+                for (int i = 0; i < Share.fm2ItembeanList.size(); i++) {
+                    Share.fm2ItembeanList.get(i).setIscheck(true);
                 }
                 mAdapter.notifyDataSetChanged();
                 break;
 
             case R.id.bt_fm2_selectnon:
-                for (int i = 0; i < itembeanList.size(); i++) {
-                    if (itembeanList.get(i).getIscheck()) {
-                        itembeanList.get(i).setIscheck(false);
+                for (int i = 0; i < Share.fm2ItembeanList.size(); i++) {
+                    if (Share.fm2ItembeanList.get(i).getIscheck()) {
+                        Share.fm2ItembeanList.get(i).setIscheck(false);
                     } else {
-                        itembeanList.get(i).setIscheck(true);
+                        Share.fm2ItembeanList.get(i).setIscheck(true);
                     }
                 }
 
@@ -144,19 +148,32 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
             case R.id.bt_fm2_plus:
                 Intent intent = new Intent(getActivity(),NewkeywordActivity.class);
                 intent.putExtra("title","添加关键词");
+                intent.putExtra("type","add");
                 startActivityForResult(intent,REQUEST_CODE);
                 break;
             case R.id.bt_fm2_delete:
-                for(int i=0;i<itembeanList.size();i++)
+                final List<String> checkedList = new ArrayList<>();
+                for(int i=0;i<Share.fm2ItembeanList.size();i++)
                 {
-                    if (itembeanList.get(i).getIscheck())
+                    if(Share.fm2ItembeanList.get(i).getIscheck())
                     {
-                        Log.d("SecondFragment", "i:" + i);
-                        itembeanList.remove(i);
-                        i--;
+                        checkedList.add(Share.fm2ItembeanList.get(i).getTitle());
                     }
                 }
-                mAdapter.notifyDataSetChanged();
+                if(checkedList.size()!=0)
+                {
+                    ProgressBarCycle.setProgressBar(getContext(),"正在删除关键词...");
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Manager24 manager24 = new Manager24(getContext(),handler);
+                            manager24.upload(checkedList);
+                        }
+                    }).start();
+
+                }
+
+
                 break;
         }
 
@@ -170,11 +187,46 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
             if(resultCode == RESULT_OK)
             {
                 Fm2Itembean itembean = data.getParcelableExtra("return");
-                itembeanList.add(0,itembean);
+                Share.fm2ItembeanList.add(0,itembean);
+                mAdapter.notifyDataSetChanged();
+            }
+            else if(resultCode == REFRESH)
+            {
                 mAdapter.notifyDataSetChanged();
             }
         }
     }
+
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what)
+            {
+                case 24:
+                    if(msg.obj.toString().equals("24"))
+                    {
+                        for(int i=0;i<Share.fm2ItembeanList.size();i++)
+                        {
+                            if (Share.fm2ItembeanList.get(i).getIscheck())
+                            {
+                                Log.d("SecondFragment", "i:" + i);
+                                Share.fm2ItembeanList.remove(i);
+                                i--;
+                            }
+                        }
+                        mAdapter.notifyDataSetChanged();
+                        Toast.makeText(getContext(), "删除关键词成功", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        Toast.makeText(getContext(), "删除关键词失败，请检查网络设置", Toast.LENGTH_SHORT).show();
+                    }
+                    ProgressBarCycle.cancleProgressBar();
+                    break;
+            }
+        }
+    };
 
 
 }

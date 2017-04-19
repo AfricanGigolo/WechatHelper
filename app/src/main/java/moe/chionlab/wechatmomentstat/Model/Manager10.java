@@ -5,8 +5,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -15,9 +20,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.acl.Group;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import moe.chionlab.wechatmomentstat.common.NowUser;
+import moe.chionlab.wechatmomentstat.common.Share;
 
 
 /**
@@ -35,13 +42,19 @@ public class Manager10 {
     }
 
 
-    public void upload() throws JSONException {
+    public void upload(){
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code","10");
-        jsonObject.put("data",new JSONObject().put("id", NowUser.id));
+
+        try {
+            jsonObject.put("code","10");
+            jsonObject.put("data",new JSONObject().put("id", NowUser.id));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         String str = jsonObject.toString();
 
-        final String urlPath = "http://58.213.141.235:8080/qmjs_FEP/datewalk/createSportTrack.action";
+        final String urlPath = Share.IP_ADDRESS+"/qmjs_FEP/datewalk/createSportTrack.action";
         URL url;
         try {
             url = new URL(urlPath);
@@ -68,18 +81,48 @@ public class Manager10 {
             while ((retData = in.readLine()) != null) {
                 responseData += retData;
             }
-            JSONObject retJson = new JSONObject();
-            retJson.getJSONObject(responseData);
-            Map<String,Object> datamap= (Map<String, Object>) retJson.get("data");
-            ArrayList<Group> groups = (ArrayList<Group>) datamap.get("groups");
+            JSONTokener jsonTokener = new JSONTokener(responseData);
+            List<Map<String, Object>> oldgrouplist = null;
+
+            try {
+                jsonObject = (JSONObject) jsonTokener.nextValue();
+                JSONObject jsdata = jsonObject.getJSONObject("data");
+                JSONArray jsgroups = jsdata.getJSONArray("groups");
+                Gson gson = new Gson();
+                oldgrouplist = gson.fromJson(jsgroups.toString(), new TypeToken<List<Map<String, Object>>>() {
+                }.getType());
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.d("Manager30", "解析json失败");
+
+            }
+            for(int i=0;i<oldgrouplist.size();i++)
+            {
+                Fm1Itembean fm1Itembean = new Fm1Itembean();
+                fm1Itembean.setIscheck(false);
+                fm1Itembean.setTitle(oldgrouplist.get(i).get("name").toString());
+                fm1Itembean.setId(oldgrouplist.get(i).get("group").toString());
+                Share.fm3addedList.add(fm1Itembean);
+            }
+
             Message message = new Message();
-            handler.sendEmptyMessage(-1);
+            message.what = 10;
+            message.obj="10";
+            handler.sendMessage(message);
 
 
 
         } catch (Exception e) {
 // TODO: handle exception
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            Message message = new Message();
+            message.what = 10;
+            message.obj="2";
+            handler.sendMessage(message);
+
+
         }
 
     }

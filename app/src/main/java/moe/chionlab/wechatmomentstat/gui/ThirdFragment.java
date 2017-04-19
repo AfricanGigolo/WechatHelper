@@ -19,6 +19,7 @@ import java.util.List;
 import moe.chionlab.wechatmomentstat.Model.Fm1Adapter;
 import moe.chionlab.wechatmomentstat.Model.Fm1Itembean;
 import moe.chionlab.wechatmomentstat.R;
+import moe.chionlab.wechatmomentstat.common.Share;
 
 /**
  * Created by chenjunfan on 2017/2/14.
@@ -31,7 +32,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener {
 
     private ListView listView;
 
-    private List<Fm1Itembean> itembeanList;
+
     private Fm1Adapter mAdapter;
     LinearLayout selectLL,bottomLL;
 
@@ -49,13 +50,10 @@ public class ThirdFragment extends Fragment implements View.OnClickListener {
 
         initView(rootView);
 
-        itembeanList = new ArrayList<Fm1Itembean>();
+        
 
-        for(int i=0;i<20;i++)
-        {
-            itembeanList.add(new Fm1Itembean("群组"+(i+32)));
-        }
-        mAdapter = new Fm1Adapter(getContext(),itembeanList);
+
+        mAdapter = new Fm1Adapter(getContext(),Share.fm3addedList);
         listView.setAdapter(mAdapter);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -109,23 +107,35 @@ public class ThirdFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.bt_fm3_plus:
                 Intent intent = new Intent(getActivity(),Fm3AddActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent,1);
                 break;
             case R.id.bt_fm1_selectall:
-                for (int i = 0; i < itembeanList.size(); i++) {
-                    itembeanList.get(i).setIscheck(true);
+                for (int i = 0; i < Share.fm3addedList.size(); i++) {
+                    Share.fm3addedList.get(i).setIscheck(true);
                 }
                 mAdapter.notifyDataSetChanged();
                 break;
 
             case R.id.bt_fm1_selectnon:
-                for (int i = 0; i < itembeanList.size(); i++) {
-                    if (itembeanList.get(i).getIscheck()) {
-                        itembeanList.get(i).setIscheck(false);
+                for (int i = 0; i < Share.fm3addedList.size(); i++) {
+                    if (Share.fm3addedList.get(i).getIscheck()) {
+                        Share.fm3addedList.get(i).setIscheck(false);
                     } else {
-                        itembeanList.get(i).setIscheck(true);
+                        Share.fm3addedList.get(i).setIscheck(true);
                     }
                 }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == 1)
+        {
+            if(resultCode ==1)
+            {
+                mAdapter.notifyDataSetChanged();
+            }
         }
     }
 }

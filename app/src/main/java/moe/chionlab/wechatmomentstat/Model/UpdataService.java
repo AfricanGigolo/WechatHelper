@@ -91,7 +91,7 @@ public class UpdataService extends Service {
                 super.onPostExecute(voidParam);
 
                 if (this.error != null) {
-                    Toast.makeText(UpdataService.this, R.string.not_rooted, Toast.LENGTH_LONG).show();
+                    Toast.makeText(UpdataService.this,"设备没有root权限，请获取root权限再试", Toast.LENGTH_LONG).show();
                     Log.e("wechatmomentstat", "exception", this.error);
 
                     return;

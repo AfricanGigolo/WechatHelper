@@ -25,29 +25,28 @@ import moe.chionlab.wechatmomentstat.common.NowUser;
 import moe.chionlab.wechatmomentstat.common.Share;
 
 /**
- * Created by chenjunfan on 2017/3/14.
- * 添加自动上传群组
+ * Created by chenjunfan on 2017/4/12.
  */
 
-public class Manager11 {
-    Context context;
-    Handler handler;
+public class Manager12 {
 
-    public Manager11(Context context, Handler handler) {
-        this.context = context;
+    private Handler handler;
+    private Context context;
+
+    public Manager12(Handler handler, Context context) {
         this.handler = handler;
+        this.context = context;
     }
 
-    public void upload(List<Map<String,Object>> groupList)
+    public void upload(List<String> groups)
     {
-        Map<String,Object> data= new HashMap<String,Object>();
-        data.put("groups",groupList);
+        Map<String,Object> data = new HashMap<String,Object>();
         data.put("id", NowUser.id);
-        Map<String,Object> finaldata = new HashMap<String,Object>();
+        data.put("groups",groups);
+        Map<String,Object>finaldata = new HashMap<>();
+        finaldata.put("code",12);
         finaldata.put("data",data);
-        finaldata.put("code",11);
-        Gson gson = new Gson();
-        String str = gson.toJson(finaldata);
+        String str = new Gson().toJson(finaldata);
 
         Looper.prepare();
         final String urlPath = Share.IP_ADDRESS
@@ -59,6 +58,7 @@ public class Manager11 {
 /*封装子对象*/
 
             String content = str;
+
             System.out.println(content);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(5000);
@@ -80,9 +80,9 @@ public class Manager11 {
             }
 
             //Toast.makeText(context,"收到："+ responseData, Toast.LENGTH_SHORT).show();
-            Log.d("responsData11", responseData);
+            Log.d("responsData", responseData);
             Message msg = new Message();
-            msg.what=11;
+            msg.what=12;
             JSONTokener jsonTokener = new JSONTokener(responseData);
             msg.obj=((JSONObject)jsonTokener.nextValue()).getString("code");
             handler.sendMessage(msg);
@@ -93,7 +93,7 @@ public class Manager11 {
             e.printStackTrace();
             Log.d("response", "连接网络失败");
             Message msg = new Message();
-            msg.what=11;
+            msg.what=12;
             msg.obj = "2";
             handler.sendMessage(msg);
 
@@ -101,6 +101,5 @@ public class Manager11 {
 
         }
         Looper.loop();
-
     }
 }

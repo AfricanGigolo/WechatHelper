@@ -2,49 +2,61 @@ package moe.chionlab.wechatmomentstat.Model;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
-import org.json.JSONException;
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import moe.chionlab.wechatmomentstat.common.Share;
 
 /**
- * Created by chenjunfan on 2017/3/14.
+ * Created by chenjunfan on 2017/4/14.
  */
 
-public class Manager00 {
-    Context context;
-    Handler handler;
+public class Manager23 {
+    private Context context;
+    private Handler handler;
 
-    public Manager00(Context context,Handler handler) {
+    public Manager23(Context context, Handler handler) {
         this.context = context;
         this.handler = handler;
     }
 
-    public void upload(String account, String password) throws JSONException {
-        JSONObject json1 = new JSONObject();
-        json1.put("account", account);
-        json1.put("password", password);
-        String str = new JSONObject().put("code", 00).put("data", json1).toString();
+    public void upload(Map<String,Object> data)
+    {
+        Map<String,Object> finaldata = new HashMap<>();
+        finaldata.put("data",data);
+        finaldata.put("code",23);
+        String str = new Gson().toJson(finaldata);
 
-        final String urlPath = Share.IP_ADDRESS+"/qmjs_FEP/datewalk/createSportTrack.action";
+        Looper.prepare();
+        final String urlPath = Share.IP_ADDRESS
+                +"/ChatDetection/uploadServlet";
+        Log.d("url", urlPath);
         URL url;
         try {
             url = new URL(urlPath);
-
 /*封装子对象*/
 
             String content = str;
-            Log.d("update", content);
+
+
+            System.out.println(content);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(5000);
             conn.setDoOutput(true);//设置允许输出
@@ -63,25 +75,26 @@ public class Manager00 {
             while ((retData = in.readLine()) != null) {
                 responseData += retData;
             }
-            JSONObject retJson = new JSONObject();
-            retJson.getJSONObject(responseData);
-            Message message = new Message();
-            if(retJson.get("code").toString().equals("1"))
-            {
-                message.what=Integer.parseInt(retJson.get("is_admin").toString());
-                message.obj=retJson.get("user_id");
-                handler.sendMessage(message);
-            }
-            else
-                handler.sendEmptyMessage(-1);
 
+            //Toast.makeText(context,"收到："+ responseData, Toast.LENGTH_SHORT).show();
+            Log.d("responsData", responseData);
+            Message msg = new Message();
+            msg.what=23;
+            JSONTokener jsonTokener = new JSONTokener(responseData);
+            msg.obj=((JSONObject)jsonTokener.nextValue()).getString("code");
+            handler.sendMessage(msg);
 
 
         } catch (Exception e) {
 // TODO: handle exception
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            Log.d("response", "连接网络失败");
+            Message msg = new Message();
+            msg.what=23;
+            msg.obj = "2";
+            handler.sendMessage(msg);
         }
-//        Looper.loop();
+        Looper.loop();
     }
-}
 
+}
