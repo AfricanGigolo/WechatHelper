@@ -79,7 +79,10 @@ public class Manager00 {
 
         } catch (Exception e) {
 // TODO: handle exception
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            Message msg = new Message();
+            msg.what = -2;
+            handler.sendMessage(msg);
         }
 //        Looper.loop();
     }

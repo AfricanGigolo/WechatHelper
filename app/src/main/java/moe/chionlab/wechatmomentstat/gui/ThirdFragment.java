@@ -2,6 +2,8 @@ package moe.chionlab.wechatmomentstat.gui;
 
 
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,13 +14,16 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import moe.chionlab.wechatmomentstat.Model.Fm1Adapter;
 import moe.chionlab.wechatmomentstat.Model.Fm1Itembean;
+import moe.chionlab.wechatmomentstat.Model.Manager12;
 import moe.chionlab.wechatmomentstat.R;
+import moe.chionlab.wechatmomentstat.common.ProgressBarCycle;
 import moe.chionlab.wechatmomentstat.common.Share;
 
 /**
@@ -109,14 +114,14 @@ public class ThirdFragment extends Fragment implements View.OnClickListener {
                 Intent intent = new Intent(getActivity(),Fm3AddActivity.class);
                 startActivityForResult(intent,1);
                 break;
-            case R.id.bt_fm1_selectall:
+            case R.id.bt_fm3_selectall:
                 for (int i = 0; i < Share.fm3addedList.size(); i++) {
                     Share.fm3addedList.get(i).setIscheck(true);
                 }
                 mAdapter.notifyDataSetChanged();
                 break;
 
-            case R.id.bt_fm1_selectnon:
+            case R.id.bt_fm3_selectnon:
                 for (int i = 0; i < Share.fm3addedList.size(); i++) {
                     if (Share.fm3addedList.get(i).getIscheck()) {
                         Share.fm3addedList.get(i).setIscheck(false);
@@ -124,6 +129,30 @@ public class ThirdFragment extends Fragment implements View.OnClickListener {
                         Share.fm3addedList.get(i).setIscheck(true);
                     }
                 }
+                break;
+            case R.id.bt_fm3_yes:
+                ProgressBarCycle.setProgressBar(getContext(),"正在删除群组，请稍候...");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Manager12 manager12 = new Manager12(handler,getContext());
+                        List<String> grouplist = new ArrayList<String>();
+                        for(int i=0;i<Share.fm3addedList.size();i++)
+                        {
+                            Fm1Itembean fm1Itembean = Share.fm3addedList.get(i);
+                            if(fm1Itembean.getIscheck())
+                            {
+                                grouplist.add(fm1Itembean.getId());
+                            }
+                        }
+                        if(grouplist.size()!=0)
+                        {
+                            manager12.upload(grouplist);
+                        }
+                    }
+                }).start();
+
+                break;
         }
     }
 
@@ -138,4 +167,38 @@ public class ThirdFragment extends Fragment implements View.OnClickListener {
             }
         }
     }
+
+    Handler handler = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what)
+            {
+                case 12:
+                    if(msg.obj.toString().equals("1"))
+                    {
+                        for(int i=0;i<Share.fm3addedList.size();i++)
+                        {
+                            Fm1Itembean fm1Itembean = Share.fm3addedList.get(i);
+                            if(fm1Itembean.getIscheck())
+                            {
+                                Share.fm3allList.add(fm1Itembean);
+                                Share.fm3addedList.remove(i);
+                                i--;
+                            }
+                        }
+                        mAdapter.notifyDataSetChanged();
+                        ProgressBarCycle.cancleProgressBar();
+                        Toast.makeText(getContext(), "删除群组成功", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        ProgressBarCycle.cancleProgressBar();
+                        Toast.makeText(getContext(), "删除群组失败，请检查网络设置", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+            }
+        }
+    };
 }

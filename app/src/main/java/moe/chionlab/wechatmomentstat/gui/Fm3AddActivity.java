@@ -47,20 +47,21 @@ public class Fm3AddActivity extends Activity implements View.OnClickListener {
 
         mAdapter = new Fm1Adapter(Fm3AddActivity.this, Share.fm3allList);
         listView.setAdapter(mAdapter);
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (mAdapter.flag!=true)
-                {
-                    mAdapter.flag = true;
-                    selectLL.setVisibility(View.VISIBLE);
-
-                    bottomLL.setVisibility(View.VISIBLE);
-                    mAdapter.notifyDataSetChanged();
-                }
-                return false;
-            }
-        });
+        mAdapter.flag=true;
+//        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                if (mAdapter.flag!=true)
+//                {
+//                    mAdapter.flag = true;
+//                    selectLL.setVisibility(View.VISIBLE);
+//
+//                    bottomLL.setVisibility(View.VISIBLE);
+//                    mAdapter.notifyDataSetChanged();
+//                }
+//                return false;
+//            }
+//        });
 
     }
 
@@ -118,7 +119,7 @@ public class Fm3AddActivity extends Activity implements View.OnClickListener {
                 mAdapter.notifyDataSetChanged();
                 break;
             case R.id.bt_fm3add_yes:
-                List<Map<String,Object>> groupList = new ArrayList<>();
+                final List<Map<String,Object>> groupList = new ArrayList<>();
                 for(int i=0;i<Share.fm3allList.size();i++)
                 {
                     if(Share.fm3allList.get(i).getIscheck())
@@ -132,8 +133,14 @@ public class Fm3AddActivity extends Activity implements View.OnClickListener {
                 if(groupList.size()!=0)
                 {
                     ProgressBarCycle.setProgressBar(Fm3AddActivity.this,"正在添加，请稍候...");
-                    Manager11 manager11 = new Manager11(Fm3AddActivity.this,handler);
-                    manager11.upload(groupList);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Manager11 manager11 = new Manager11(Fm3AddActivity.this,handler);
+                            manager11.upload(groupList);
+                        }
+                    }).start();
+
                 }
                 break;
             case R.id.bt_fm3add_cancle:
@@ -149,7 +156,7 @@ public class Fm3AddActivity extends Activity implements View.OnClickListener {
             switch (msg.what)
             {
                 case 11:
-                    if(msg.obj.toString().equals(11))
+                    if(msg.obj.toString().equals("1"))
                     {
                         for(int i=0;i<Share.fm3allList.size();i++)
                         {

@@ -17,24 +17,20 @@
         <activity android:name=".gui.MymainActivity"
             android:label="微信助手"
             android:screenOrientation="portrait"
-
             >
-
-
         </activity>
         <activity
             android:name=".gui.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             >
-
-        </activity>
-        <activity android:name=".gui.MainActivity"
-            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".gui.MainActivity"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".gui.Fm1UploadActivity"
             android:screenOrientation="portrait"

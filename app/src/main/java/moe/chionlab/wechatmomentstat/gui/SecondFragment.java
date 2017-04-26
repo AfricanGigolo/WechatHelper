@@ -204,7 +204,7 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
             switch (msg.what)
             {
                 case 24:
-                    if(msg.obj.toString().equals("24"))
+                    if(msg.obj.toString().equals("1"))
                     {
                         for(int i=0;i<Share.fm2ItembeanList.size();i++)
                         {

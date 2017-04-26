@@ -160,7 +160,7 @@ public class MainActivity extends FragmentActivity {
                     break;
                 case 10:
                    // Log.d("MainActivity", msg.what + "," + msg.obj.toString());
-                    if(msg.obj.toString().equals("10"))
+                    if(msg.obj.toString().equals("1"))
                         count++;
                     else
                     {
@@ -181,7 +181,7 @@ public class MainActivity extends FragmentActivity {
             {
                 if(nonetwork == true)
                 {
-                    Toast.makeText(MainActivity.this, "网络不畅通，请检查网络设置", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "网络不畅通，无法获取关键词表和自动上传列表，请检查网络设置.若一直未解决，请与管理员联系。", Toast.LENGTH_SHORT).show();
                 }
                 ProgressBarCycle.cancleProgressBar();
                 initView();

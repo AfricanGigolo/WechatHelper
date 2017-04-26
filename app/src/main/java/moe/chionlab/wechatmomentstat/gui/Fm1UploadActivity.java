@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -56,7 +57,12 @@ public class Fm1UploadActivity extends Activity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fm1upload);
         initView();
-        Calendar mycalendar=Calendar.getInstance();
+        Time t=new Time(); // or Time t=new Time("GMT+8"); 加上Time Zone资料
+        t.setToNow(); // 取得系统时间。
+         year = t.year;
+         month = t.month;
+         day = t.monthDay;
+
 
 
 
@@ -146,11 +152,11 @@ public class Fm1UploadActivity extends Activity implements View.OnClickListener 
                 isShowShortText = !isShowShortText;
                 break;
             case R.id.bt_fm1up_date1:
-                DatePickerDialog dpd=new DatePickerDialog(this,Datelistener1,year1,month1,day1);
+                DatePickerDialog dpd=new DatePickerDialog(this,Datelistener1,year,month,day);
                 dpd.show();
                 break;
             case R.id.bt_fm1up_date2:
-                DatePickerDialog dpd2=new DatePickerDialog(this,Datelistener2,year1,month1,day1);
+                DatePickerDialog dpd2=new DatePickerDialog(this,Datelistener2,year,month,day);
                 dpd2.show();
                 break;
             case R.id.bt_fm1up_re:
@@ -273,7 +279,7 @@ public class Fm1UploadActivity extends Activity implements View.OnClickListener 
             switch (msg.what)
             {
                 case 31:
-                    if(msg.obj.toString().equals("31"))
+                    if(msg.obj.toString().equals("1"))
                     {
                         Toast.makeText(Fm1UploadActivity.this, "上传成功", Toast.LENGTH_SHORT).show();
                         ProgressBarCycle.cancleProgressBar();

@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import moe.chionlab.wechatmomentstat.Model.Fm2Itembean;
 import moe.chionlab.wechatmomentstat.Model.Manager21;
@@ -86,15 +88,21 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
 //                    setResult(1,intent);
 //                    finish();
 //                }
+                Pattern p = Pattern.compile("[0-9]*");
+                Matcher m = p.matcher(rightET.getText().toString());
                 if(getIntent().getStringExtra("type").equals("add"))
                 {
-                    if(keywordET.getText().equals(""))
+                    if(keywordET.getText().toString().equals(""))
                     {
-
+                        Toast.makeText(this, "请输入关键词", Toast.LENGTH_SHORT).show();
                     }
-                    if(rightET.getText().equals(""))
+                    else if(rightET.getText().toString().equals(""))
                     {
-
+                        Toast.makeText(this, "请输入权值", Toast.LENGTH_SHORT).show();
+                    }
+                    else if(!m.matches())
+                    {
+                        Toast.makeText(this, "权值包含非法字符", Toast.LENGTH_SHORT).show();
                     }
                     else
                     {
@@ -119,11 +127,11 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
                 }
                 else if(getIntent().getStringExtra("type").equals("edit"))
                 {
-                    if(keywordET.getText().equals(""))
+                    if(keywordET.getText().toString().equals(""))
                     {
 
                     }
-                    if(rightET.getText().equals(""))
+                    else if(rightET.getText().toString().equals(""))
                     {
 
                     }
@@ -155,7 +163,7 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
             switch (msg.what)
             {
                 case 22:
-                    if(msg.obj.toString().equals("22"))
+                    if(msg.obj.toString().equals("1"))
                     {
                         if(getIntent().getStringExtra("type").equals("add"))
                         {
@@ -182,7 +190,7 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
                     }
                     break;
                 case 23:
-                    if(msg.obj.toString().equals("23"))
+                    if(msg.obj.toString().equals("1"))
                     {
                         Toast.makeText(NewkeywordActivity.this, "编辑关键词成功", Toast.LENGTH_SHORT).show();
                         Fm2Itembean fm2Itembean = new Fm2Itembean(keywordET.getText().toString(),Integer.parseInt(rightET.getText().toString()));
@@ -214,7 +222,7 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
             switch (msg.what)
             {
                 case 24:
-                    if(msg.obj.toString().equals("24"))
+                    if(msg.obj.toString().equals("1"))
                     {
                         new Thread(new Runnable() {
                             @Override
