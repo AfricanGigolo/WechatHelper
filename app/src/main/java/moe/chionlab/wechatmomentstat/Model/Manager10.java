@@ -47,14 +47,14 @@ public class Manager10 {
 
         try {
             jsonObject.put("code","10");
-            jsonObject.put("data",new JSONObject().put("id", NowUser.id));
+            jsonObject.put("data",new JSONObject().put("id", Integer.parseInt(NowUser.id)));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         String str = jsonObject.toString();
 
-        final String urlPath = Share.IP_ADDRESS+"/qmjs_FEP/datewalk/createSportTrack.action";
+        final String urlPath = Share.IP_ADDRESS+"/ChatDetection/groupManageServlet";
         URL url;
         try {
             url = new URL(urlPath);
@@ -81,6 +81,7 @@ public class Manager10 {
             while ((retData = in.readLine()) != null) {
                 responseData += retData;
             }
+            Log.d("Manager10", responseData);
             JSONTokener jsonTokener = new JSONTokener(responseData);
             List<Map<String, Object>> oldgrouplist = null;
 
@@ -109,7 +110,7 @@ public class Manager10 {
 
             Message message = new Message();
             message.what = 10;
-            message.obj="10";
+            message.obj="1";
             handler.sendMessage(message);
 
 

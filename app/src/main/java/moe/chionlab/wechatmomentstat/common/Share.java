@@ -14,7 +14,8 @@ import moe.chionlab.wechatmomentstat.SnsStat;
 public class Share {
     static public SnsStat snsData = null;
     static public String databasePassword=null;
-    static public String IP_ADDRESS = "http://192.168.1.116:8080";
+//    static public String IP_ADDRESS = "http://chen-256.vicp.cc:17518";
+    static public String IP_ADDRESS = "http://192.168.1.13:8080";
     static public List<Fm1Itembean> fm1ItembeanList = new ArrayList<>();
     static public List<Fm2Itembean> fm2ItembeanList = new ArrayList<>();
     static public List<Fm1Itembean> fm3allList = new ArrayList<>();

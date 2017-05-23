@@ -66,6 +66,7 @@ public class Manager31 {
             ArrayList<Map<String,Object>> groupList2;
             groupList2 = getLocalGroups(recordList);
             groupList2 = new Manager30(context).getAlreadyRecord(groupList2,checkedmap,type);
+            Log.d("Manager31_grouplist2", groupList2.toString());
             Map<String,Object> data = new HashMap<String,Object>();
             data.put("id", NowUser.id);
             data.put("groups",groupList2);
@@ -265,10 +266,10 @@ public class Manager31 {
     {
 
 // TODO Auto-generated method stub
-        Looper.prepare();
+        //Looper.prepare();
         final String urlPath =Share.IP_ADDRESS
         +"/ChatDetection/uploadServlet";
-        Log.d("url", urlPath);
+        Log.d("31url", urlPath);
         URL url;
         try {
             url = new URL(urlPath);
@@ -308,6 +309,7 @@ public class Manager31 {
             msg.obj=((JSONObject)jsonTokener.nextValue()).getString("code");
 
             handler.sendMessage(msg);
+            return;
 
 
         } catch (Exception e) {

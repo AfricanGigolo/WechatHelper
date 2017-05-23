@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -82,12 +83,17 @@ public class Fm3AddActivity extends Activity implements View.OnClickListener {
         yesBT.setOnClickListener(this);
         cancleBT.setOnClickListener(this);
 
+        Log.d("fm3addedlist_fm3alllist", Share.fm3addedList.size() + " " + Share.fm3allList);
+
         for(int i = 0;i<Share.fm3addedList.size();i++)
         {
-            for(int j=0;i<Share.fm3allList.size();j++)
+            Log.d("added:", Share.fm3addedList.get(i).getId()+" "+Share.fm3addedList.get(i).getTitle());
+            for(int j=0;j<Share.fm3allList.size();j++)
             {
+                Log.d("all:", Share.fm3allList.get(j).getId()+" "+Share.fm3allList.get(j).getTitle());
                 if(Share.fm3addedList.get(i).getId().equals(Share.fm3allList.get(j).getId()))
                 {
+
                     Share.fm3allList.remove(j);
                     break;
                 }

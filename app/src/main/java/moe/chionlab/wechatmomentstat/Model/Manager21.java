@@ -7,6 +7,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +51,7 @@ public class Manager21 {
 
         Looper.prepare();
         final String urlPath = Share.IP_ADDRESS
-                +"/ChatDetection/uploadServlet";
+                +"/ChatDetection/keywordManageServlet";
         Log.d("url", urlPath);
         URL url;
         try {
@@ -87,9 +89,14 @@ public class Manager21 {
             JSONObject obj=((JSONObject)jsonTokener.nextValue()).getJSONObject("data");
             JSONArray jsonArray = obj.getJSONArray("keywords");
             List<Map<String,Object>> keywordsList = new ArrayList<>();
-            for(int i = 0;i<jsonArray.length();i++)
+            Gson gson = new Gson();
+            keywordsList = gson.fromJson(jsonArray.toString(), new TypeToken<List<Map<String, Object>>>() {
+            }.getType());
+            for(int i=0;i<keywordsList.size();i++)
             {
-                keywordsList.add((Map<String, Object>) jsonArray.get(i));
+                Map<String,Object> datamap=new HashMap<>();
+                datamap=keywordsList.get(i);
+                Log.d("Manager21", datamap.get("weight").toString() + datamap.get("keyword").toString()+datamap.get("property").toString());
             }
             msg.obj=keywordsList;
             handler.sendMessage(msg);

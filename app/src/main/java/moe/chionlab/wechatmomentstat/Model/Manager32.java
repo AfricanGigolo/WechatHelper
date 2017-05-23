@@ -72,7 +72,7 @@ public class Manager32 {
 
 
 // TODO Auto-generated method stub
-        Looper.prepare();
+
         final String urlPath = Share.IP_ADDRESS
                 +"/ChatDetection/uploadServlet";
         Log.d("url", urlPath);
@@ -115,6 +115,7 @@ public class Manager32 {
             JSONTokener jsonTokener = new JSONTokener(responseData);
             msg.obj=((JSONObject)jsonTokener.nextValue()).getString("code");
             handler.sendMessage(msg);
+            return;
 
 
         } catch (Exception e) {

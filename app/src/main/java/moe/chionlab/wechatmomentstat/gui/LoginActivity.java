@@ -21,6 +21,7 @@ import org.json.JSONException;
 
 import moe.chionlab.wechatmomentstat.Model.Manager00;
 import moe.chionlab.wechatmomentstat.R;
+import moe.chionlab.wechatmomentstat.common.Config;
 import moe.chionlab.wechatmomentstat.common.NowUser;
 import moe.chionlab.wechatmomentstat.common.ProgressBarCycle;
 
@@ -31,7 +32,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     TextView idTV,pwTV;
     EditText idET,pwET;
     Button loginBT;
-    CheckBox remCB;
+    CheckBox remCB,autochatCB,autosnsCB;
     SharedPreferences sharedPreferences = null;
     SharedPreferences.Editor editor = null;
 
@@ -58,7 +59,43 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             }
         });
 
+        autochatCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(autochatCB.isChecked())
+                {
+                    editor.putBoolean("autochat",true);
+                    Config.autouploadchatrecords = true;
+                }
+                else
+                {
+                    editor.putBoolean("autochat",false);
+                    Config.autouploadchatrecords = false;
+                }
+                editor.commit();
+            }
+        });
+
+        autosnsCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(autosnsCB.isChecked())
+                {
+                    editor.putBoolean("autosns",true);
+                    Config.autouploadsnsrecords = true;
+                }
+                else
+                {
+                    editor.putBoolean("autosns",false);
+                    Config.autouploadsnsrecords = false;
+                }
+                editor.commit();
+            }
+        });
+
     }
+
+
 
     private void initView() //初始化视图
     {
@@ -68,6 +105,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         pwET = (EditText) findViewById(R.id.et_lg_pw);  //密码xx
         loginBT = (Button) findViewById(R.id.bt_lg_login); //登录按钮
         remCB = (CheckBox) findViewById(R.id.cb_lg_remaccount);
+        autochatCB = (CheckBox) findViewById(R.id.cb_lg_autochat);
+        autosnsCB = (CheckBox) findViewById(R.id.cb_lg_autosns);
 
         sharedPreferences = getSharedPreferences("LoginInfo",MODE_PRIVATE);
         editor = sharedPreferences.edit();
@@ -77,6 +116,18 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             remCB.setChecked(true);
             idET.setText(sharedPreferences.getString("account",""));
             pwET.setText(sharedPreferences.getString("password",""));
+        }
+
+        if(sharedPreferences.getBoolean("autochat",false))
+        {
+            autochatCB.setChecked(true);
+            Config.autouploadchatrecords=true;
+        }
+
+        if(sharedPreferences.getBoolean("autosns",false))
+        {
+            autosnsCB.setChecked(true);
+            Config.autouploadsnsrecords=true;
         }
 
     }

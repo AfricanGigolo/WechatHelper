@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -34,9 +35,9 @@ public class Manager00 {
         JSONObject json1 = new JSONObject();
         json1.put("account", account);
         json1.put("password", password);
-        String str = new JSONObject().put("code", 00).put("data", json1).toString();
+        String str = new JSONObject().put("code", "00").put("data", json1).toString();
 
-        final String urlPath = Share.IP_ADDRESS+"/qmjs_FEP/datewalk/createSportTrack.action";
+        final String urlPath = Share.IP_ADDRESS+"/ChatDetection/userManageServlet";
         URL url;
         try {
             url = new URL(urlPath);
@@ -63,13 +64,16 @@ public class Manager00 {
             while ((retData = in.readLine()) != null) {
                 responseData += retData;
             }
+            Log.d("Manager00", responseData);
             JSONObject retJson = new JSONObject();
-            retJson.getJSONObject(responseData);
+//            retJson.getJSONObject(responseData);
+            JSONTokener jsonTokener = new JSONTokener(responseData);
+            retJson = (JSONObject) jsonTokener.nextValue();
             Message message = new Message();
             if(retJson.get("code").toString().equals("1"))
             {
                 message.what=Integer.parseInt(retJson.get("is_admin").toString());
-                message.obj=retJson.get("user_id");
+                message.obj=retJson.get("id").toString();
                 handler.sendMessage(message);
             }
             else
@@ -80,6 +84,7 @@ public class Manager00 {
         } catch (Exception e) {
 // TODO: handle exception
             e.printStackTrace();
+            Log.d("Manager00", "错误");
             Message msg = new Message();
             msg.what = -2;
             handler.sendMessage(msg);

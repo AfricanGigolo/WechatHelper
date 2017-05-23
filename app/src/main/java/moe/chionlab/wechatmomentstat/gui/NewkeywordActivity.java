@@ -7,9 +7,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +29,7 @@ import moe.chionlab.wechatmomentstat.Model.Manager21;
 import moe.chionlab.wechatmomentstat.Model.Manager22;
 import moe.chionlab.wechatmomentstat.Model.Manager23;
 import moe.chionlab.wechatmomentstat.Model.Manager24;
+import moe.chionlab.wechatmomentstat.Model.SPlist;
 import moe.chionlab.wechatmomentstat.R;
 import moe.chionlab.wechatmomentstat.common.NowUser;
 import moe.chionlab.wechatmomentstat.common.ProgressBarCycle;
@@ -37,9 +41,13 @@ import moe.chionlab.wechatmomentstat.common.Share;
 
 public class NewkeywordActivity extends Activity implements View.OnClickListener {
     TextView titleTV;
-    EditText keywordET,rightET;
+    EditText keywordET;
+    Spinner rightSP,propertySP;
     Button yesBT,cancleBT;
+    String right="-1",property="n";
     ImageButton reBT;
+    SPlist sPlist;
+    ArrayAdapter<String> rightadapter,propertyadapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +59,8 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
     {
         titleTV = (TextView) findViewById(R.id.tv_nkw_title);
         keywordET = (EditText) findViewById(R.id.et_nkw_keyword);
-        rightET = (EditText) findViewById(R.id.et_nkw_right);
+        rightSP = (Spinner) findViewById(R.id.sp_nkw_right);
+        propertySP = (Spinner) findViewById(R.id.sp_nkw_property);
         yesBT = (Button) findViewById(R.id.bt_nkw_yes);
         cancleBT = (Button) findViewById(R.id.bt_nkw_cancle);
         reBT = (ImageButton) findViewById(R.id.bt_nkw_re);
@@ -61,11 +70,55 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
         reBT.setOnClickListener(this);
         Intent intent = getIntent();
         titleTV.setText(intent.getStringExtra("title"));
+        sPlist = new SPlist();
+
+        rightadapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,sPlist.rightlist);
+        propertyadapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,sPlist.propertylist);
+        rightadapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        propertyadapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        rightSP.setAdapter(rightadapter);
+        propertySP.setAdapter(propertyadapter);
+
+        rightSP.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                right =sPlist.getcode(rightadapter.getItem(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        propertySP.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                property =sPlist.getcode(propertyadapter.getItem(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+
+
+
+
+
 
         if(intent.getStringExtra("type").equals("edit"))
         {
             keywordET.setText(Share.fm2ItembeanList.get(intent.getIntExtra("No",0)).getTitle());
-            rightET.setText(Share.fm2ItembeanList.get(intent.getIntExtra("No",0)).getRight());
+            right = Share.fm2ItembeanList.get(intent.getIntExtra("No",0)).getRight()+"";
+            property = Share.fm2ItembeanList.get(intent.getIntExtra("No",0)).getProperty();
+            sPlist.setSpinnerItemSelectedByValue(rightSP,sPlist.getstr(right));
+            sPlist.setSpinnerItemSelectedByValue(propertySP,sPlist.getstr(property));
+
+//            rightET.setText(Share.fm2ItembeanList.get(intent.getIntExtra("No",0)).getRight());
         }
 
     }
@@ -89,21 +142,17 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
 //                    finish();
 //                }
                 Pattern p = Pattern.compile("[0-9]*");
-                Matcher m = p.matcher(rightET.getText().toString());
+
                 if(getIntent().getStringExtra("type").equals("add"))
                 {
                     if(keywordET.getText().toString().equals(""))
                     {
                         Toast.makeText(this, "请输入关键词", Toast.LENGTH_SHORT).show();
                     }
-                    else if(rightET.getText().toString().equals(""))
-                    {
-                        Toast.makeText(this, "请输入权值", Toast.LENGTH_SHORT).show();
-                    }
-                    else if(!m.matches())
-                    {
-                        Toast.makeText(this, "权值包含非法字符", Toast.LENGTH_SHORT).show();
-                    }
+//                    else if(!m.matches())
+//                    {
+//                        Toast.makeText(this, "权值包含非法字符", Toast.LENGTH_SHORT).show();
+//                    }
                     else
                     {
                         ProgressBarCycle.setProgressBar(NewkeywordActivity.this,"正在上传...");
@@ -114,8 +163,8 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
                                 Map<String,String> datamap = new HashMap<>();
                                 datamap.put("id", NowUser.id);
                                 datamap.put("keyword",keywordET.getText().toString());
-                                datamap.put("weight",rightET.getText().toString());
-                                datamap.put("property","");
+                                datamap.put("weight",right);
+                                datamap.put("property",property);
                                 Map<String,Object> finaldata = new HashMap<>();
                                 finaldata.put("code",22);
                                 finaldata.put("data",datamap);
@@ -131,10 +180,10 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
                     {
 
                     }
-                    else if(rightET.getText().toString().equals(""))
-                    {
-
-                    }
+//                    else if(rightET.getText().toString().equals(""))
+//                    {
+//
+//                    }
                     else
                     {
                         ProgressBarCycle.setProgressBar(NewkeywordActivity.this,"正在上传...");
@@ -144,6 +193,7 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
                                 List<String> oldkeywordList = new ArrayList<String>();
                                 oldkeywordList.add(Share.fm2ItembeanList.get(getIntent().getIntExtra("No",0)).getTitle());
                                 Manager24 manager24 = new Manager24(NewkeywordActivity.this,temphandler);
+                                manager24.upload(oldkeywordList);
 
 
                             }
@@ -168,6 +218,12 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
                         if(getIntent().getStringExtra("type").equals("add"))
                         {
                             Toast.makeText(NewkeywordActivity.this, "添加关键词成功", Toast.LENGTH_SHORT).show();
+                            Fm2Itembean fm2Itembean = new Fm2Itembean(keywordET.getText().toString(),Integer.parseInt(right),property);
+                            Share.fm2ItembeanList.add(fm2Itembean);
+
+                            Intent intent = new Intent();
+                            setResult(2,intent);
+                            finish();
                         }
                         else if(getIntent().getStringExtra("type").equals("edit"))
                         {
@@ -193,7 +249,7 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
                     if(msg.obj.toString().equals("1"))
                     {
                         Toast.makeText(NewkeywordActivity.this, "编辑关键词成功", Toast.LENGTH_SHORT).show();
-                        Fm2Itembean fm2Itembean = new Fm2Itembean(keywordET.getText().toString(),Integer.parseInt(rightET.getText().toString()));
+                        Fm2Itembean fm2Itembean = new Fm2Itembean(keywordET.getText().toString(),Integer.parseInt(right),property);
                         Share.fm2ItembeanList.set(getIntent().getIntExtra("No",0),fm2Itembean);
 
                         Intent intent = new Intent();
@@ -231,14 +287,14 @@ public class NewkeywordActivity extends Activity implements View.OnClickListener
                                 Map<String,String> datamap = new HashMap<>();
                                 datamap.put("id", NowUser.id);
                                 datamap.put("keyword",keywordET.getText().toString());
-                                datamap.put("weight",rightET.getText().toString());
-                                datamap.put("property","");
+                                datamap.put("weight",right);
+                                datamap.put("property",property);
                                 Map<String,Object> finaldata = new HashMap<>();
-                                finaldata.put("code",23);
+                                finaldata.put("code",22);
                                 finaldata.put("data",datamap);
                                 manager23.upload(finaldata);
                             }
-                        });
+                        }).start();
                     }
                     else
                     {

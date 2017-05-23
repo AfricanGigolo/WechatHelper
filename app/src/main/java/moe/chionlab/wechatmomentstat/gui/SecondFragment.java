@@ -88,7 +88,7 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
                 intent.putExtra("title","编辑关键词");
                 intent.putExtra("type","edit");
                 intent.putExtra("No",i);
-                startActivity(intent);
+                startActivityForResult(intent,REQUEST_CODE);
             }
         });
 
@@ -187,8 +187,9 @@ public class SecondFragment extends Fragment implements View.OnClickListener {
             if(resultCode == RESULT_OK)
             {
                 Fm2Itembean itembean = data.getParcelableExtra("return");
-                Share.fm2ItembeanList.add(0,itembean);
+                Share.fm2ItembeanList.add(itembean);
                 mAdapter.notifyDataSetChanged();
+
             }
             else if(resultCode == REFRESH)
             {

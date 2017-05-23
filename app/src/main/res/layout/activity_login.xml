@@ -78,30 +78,74 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
+        android:layout_height="wrap_content">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:paddingTop="50dp"
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
             >
-            <TextView
-                android:layout_centerHorizontal="true"
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="记住密码"
-                android:id="@+id/tv_lg_remaccount"
-                />
-            <CheckBox
+                android:paddingTop="20dp"
+                android:paddingLeft="30dp"
+                >
+
+                <TextView
+                    android:id="@+id/tv_lg_remaccount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="记住密码" />
+
+                <CheckBox
+                    android:id="@+id/cb_lg_remaccount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/cb_lg_remaccount"
-                />
+
+                android:paddingTop="20dp">
+
+                <TextView
+                    android:id="@+id/tv_lg_autochat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="自动上传聊天记录" />
+
+                <CheckBox
+                    android:id="@+id/cb_lg_autochat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:paddingTop="10dp">
+
+                <TextView
+                    android:id="@+id/tv_lg_autosns"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="自动上传朋友圈记录" />
+
+                <CheckBox
+                    android:id="@+id/cb_lg_autosns"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
-
 
 
     <RelativeLayout

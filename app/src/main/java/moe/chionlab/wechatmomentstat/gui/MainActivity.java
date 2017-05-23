@@ -2,6 +2,7 @@ package moe.chionlab.wechatmomentstat.gui;
 
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,9 +36,12 @@ import moe.chionlab.wechatmomentstat.Model.Fm2Itembean;
 import moe.chionlab.wechatmomentstat.Model.Manager10;
 import moe.chionlab.wechatmomentstat.Model.Manager21;
 import moe.chionlab.wechatmomentstat.Model.Manager31;
+import moe.chionlab.wechatmomentstat.Model.Manager32;
 import moe.chionlab.wechatmomentstat.Model.ReadDatabase;
+import moe.chionlab.wechatmomentstat.Model.UpdataService;
 import moe.chionlab.wechatmomentstat.R;
 import moe.chionlab.wechatmomentstat.Task;
+import moe.chionlab.wechatmomentstat.common.Config;
 import moe.chionlab.wechatmomentstat.common.ProgressBarCycle;
 import moe.chionlab.wechatmomentstat.common.Share;
 
@@ -63,6 +68,7 @@ public class MainActivity extends FragmentActivity {
 
     //Tab选项卡的文字
     private String mTextviewArray[] = {"上传记录","关键词管理", "自动上传"};
+
 
 
 
@@ -98,7 +104,10 @@ public class MainActivity extends FragmentActivity {
                     }
                 }
                 Share.fm1ItembeanList=itembeanList;
-                Share.fm3allList=itembeanList;
+                for (int i=0;i<itembeanList.size();i++)
+                {
+                    Share.fm3allList.add(itembeanList.get(i));
+                }
                 handler.sendEmptyMessage(31);
                 Looper.loop();
 
@@ -147,7 +156,7 @@ public class MainActivity extends FragmentActivity {
                         for(int i = 0 ;i<keywordlist.size();i++)
                         {
                             Map<String,Object> keywordmap = keywordlist.get(i);
-                            Fm2Itembean fm2Itembean = new Fm2Itembean(keywordmap.get("keyword").toString(),Integer.parseInt(keywordmap.get("weight").toString()));
+                            Fm2Itembean fm2Itembean = new Fm2Itembean(keywordmap.get("keyword").toString(),Integer.parseInt(keywordmap.get("weight").toString()),keywordmap.get("property").toString());
                             fm2ItembeanList.add(fm2Itembean);
 
                         }
@@ -185,6 +194,7 @@ public class MainActivity extends FragmentActivity {
                 }
                 ProgressBarCycle.cancleProgressBar();
                 initView();
+                autoupload();
             }
 
         }
@@ -262,5 +272,96 @@ public class MainActivity extends FragmentActivity {
 
         return super.onKeyDown(keyCode, event);
     }
+
+    private void autoupload()
+    {
+
+        final Handler autohandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    case 31:
+                        ProgressBarCycle.cancleProgressBar();
+                        if (msg.obj.equals("0")) {
+                            Toast.makeText(MainActivity.this, "自动上传文字聊天记录失败！", Toast.LENGTH_SHORT).show();
+                        } else if (msg.obj.equals("1")) {
+                            Toast.makeText(MainActivity.this, "自动上传文字聊天记录成功", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "自动上传文字聊天记录:无法连接网络", Toast.LENGTH_SHORT).show();
+
+                        }
+                        break;
+                    case 32:
+                        ProgressBarCycle.cancleProgressBar();
+                        if (msg.obj.equals("0")) {
+                            Toast.makeText(MainActivity.this, "自动上传朋友圈记录失败！", Toast.LENGTH_SHORT).show();
+                        } else if (msg.obj.equals("1")) {
+                            Toast.makeText(MainActivity.this, "自动上传朋友圈记录成功！", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "自动上传朋友圈记录:无法连接网络！", Toast.LENGTH_SHORT).show();
+
+                        }
+
+                        break;
+                }
+            }
+        };
+
+        if(Config.autouploadchatrecords==true)
+        {
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Manager31 manager31 = new Manager31(MainActivity.this,autohandler);
+                    while (true)
+                    {
+
+                        manager31.upload(new HashMap<String,Object>(),2);
+                        Log.d("MainActivity", "完了");
+                        try {
+                            Thread.sleep(5*60*1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            Log.d("MainActivity", "草1");
+
+                        }
+                    }
+
+                }
+            }).start();
+        }
+
+        if(Config.autouploadsnsrecords==true)
+        {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Looper.prepare();
+                    Manager32 manager32 = new Manager32(MainActivity.this,autohandler);
+                   while (true)
+                   {
+
+                       manager32.upload();
+                       try {
+                           Thread.sleep(5*60*1000);
+                       } catch (InterruptedException e) {
+                           e.printStackTrace();
+                           Log.d("MainActivity", "草2");
+                       }
+                   }
+                }
+            }).start();
+        }
+
+        UpdataService updataService = new UpdataService();
+        Intent updataintent = new Intent(MainActivity.this,UpdataService.class);
+        startService(updataintent);
+
+
+    }
+
+
 }
 

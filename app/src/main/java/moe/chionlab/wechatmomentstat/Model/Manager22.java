@@ -39,14 +39,12 @@ public class Manager22 {
 
     public void upload(Map<String,Object> data)
     {
-        Map<String,Object> finaldata = new HashMap<>();
-        finaldata.put("data",data);
-        finaldata.put("code",22);
+        Map<String,Object> finaldata = data;
         String str = new Gson().toJson(finaldata);
 
         Looper.prepare();
         final String urlPath = Share.IP_ADDRESS
-                +"/ChatDetection/uploadServlet";
+                +"/ChatDetection/keywordManageServlet";
         Log.d("url", urlPath);
         URL url;
         try {
@@ -80,8 +78,9 @@ public class Manager22 {
             Log.d("responsData", responseData);
             Message msg = new Message();
             msg.what=22;
-            JSONTokener jsonTokener = new JSONTokener(responseData);
-            msg.obj=((JSONObject)jsonTokener.nextValue()).getString("code");
+//            JSONTokener jsonTokener = new JSONTokener(responseData);
+//            Log.d("Manager22-tostr", (jsonTokener.nextValue().toString()));
+            msg.obj=responseData;
             handler.sendMessage(msg);
 
 

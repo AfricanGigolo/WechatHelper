@@ -48,7 +48,7 @@ public class Manager24 {
 
         Looper.prepare();
         final String urlPath = Share.IP_ADDRESS
-                +"/ChatDetection/uploadServlet";
+                +"/ChatDetection/keywordManageServlet";
         Log.d("url", urlPath);
         URL url;
         try {
@@ -82,8 +82,9 @@ public class Manager24 {
             Log.d("responsData", responseData);
             Message msg = new Message();
             msg.what=24;
-            JSONTokener jsonTokener = new JSONTokener(responseData);
-            msg.obj=((JSONObject)jsonTokener.nextValue()).getString("code");
+//            JSONTokener jsonTokener = new JSONTokener(responseData);
+//            msg.obj=((JSONObject)jsonTokener.nextValue()).getString("code");
+            msg.obj=responseData;
             handler.sendMessage(msg);
 
 

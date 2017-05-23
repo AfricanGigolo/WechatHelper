@@ -67,11 +67,12 @@ public class Fm2Adapter extends BaseAdapter {
             viewHolder = (Fm2Adapter.ViewHolder) convertView.getTag();
         }
         final Fm2Itembean itembean = itemList.get(i);
+        SPlist sPlist = new SPlist();
         final int tempI = i;
         if (itembean != null)
         {
             viewHolder.titleTV.setText(itembean.getTitle());
-            viewHolder.rightTV.setText("权值:"+itembean.getRight());
+            viewHolder.rightTV.setText("权值:"+ sPlist.getstr(itembean.getRight()+""));
 
             if (flag) {
                 viewHolder.checkboxOperateData.setVisibility(View.VISIBLE);

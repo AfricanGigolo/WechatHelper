@@ -62,9 +62,8 @@ public class Manager30 {
         jsonMap.put("code", 30);
         jsonMap.put("data", datamap);
         String str = new Gson().toJson(jsonMap);
-        final String urlPath = Share.IP_ADDRESS
-                + "/ChatDetection/uploadServlet";
-        Log.d("url", urlPath);
+        final String urlPath = Share.IP_ADDRESS + "/ChatDetection/uploadServlet";
+        Log.d("manager30-url", urlPath);
         URL url;
         String responseData = "";
         try {
@@ -77,9 +76,10 @@ public class Manager30 {
                 Log.d("错误", "Manager30转换json错误");
                 return null;
             }
-            LogUtil.e("", content);
+            LogUtil.e("manager30-content", content);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(5000);
+            conn.setReadTimeout(15000);
             conn.setDoOutput(true);//设置允许输出
             conn.setRequestMethod("POST");
             conn.setRequestProperty("User-Agent", "Fiddler");
@@ -115,11 +115,14 @@ public class Manager30 {
 
         try {
             JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
-            JSONObject jsdata = jsonObject.getJSONObject("data");
-            JSONArray jsgroups = jsdata.getJSONArray("groups");
+            JSONArray jsdata = jsonObject.getJSONArray("data");
             Gson gson = new Gson();
-            timestampList = gson.fromJson(jsgroups.toString(), new TypeToken<List<Map<String, Object>>>() {
+            timestampList = gson.fromJson(jsdata.toString(), new TypeToken<List<Map<String, Object>>>() {
             }.getType());
+            for(int i=0;i<timestampList.size();i++)
+            {
+                Log.d("timestamp"+i, String.valueOf(timestampList.get(i).get("timestamp")));
+            }
 
 
         } catch (JSONException e) {
@@ -141,9 +144,11 @@ public class Manager30 {
                     continue;
                 //Log.d("find"+j,newgroupmap.get("group").toString()+" "+oldgroupmap.get("group"));
                 List<Map<String, Object>> oldRecordList = (List<Map<String, Object>>) oldgroupmap.get("chat_records");
-                Long maxtimestamp = Long.parseLong(newgroupmap.get("timestamp").toString());
-                for (int k = 0; k < oldRecordList.size(); k++) {
-                    Map<String, Object> oldmap = oldRecordList.get(k);
+                if(newgroupmap.get("timestamp")!=null)
+                {
+                    long maxtimestamp= Long.parseLong(newgroupmap.get("timestamp").toString());
+                    for (int k = 0; k < oldRecordList.size(); k++) {
+                        Map<String, Object> oldmap = oldRecordList.get(k);
 //                    int flag=0;
 //                    for(int l = 0;l<newTimestampList.size();l++)
 //                    {
@@ -163,18 +168,20 @@ public class Manager30 {
 //                    {
 //                        Log.d("notfind",k+"");
 //                    }
-                    if (Long.parseLong(oldmap.get("timestamp").toString()) <= maxtimestamp) {
-                        oldRecordList.remove(k);
-                        k--;
+                        if (Long.parseLong(oldmap.get("timestamp").toString()) <= maxtimestamp) {
+                            oldRecordList.remove(k);
+                            k--;
+                        }
                     }
                 }
+
                 oldgroupmap.put("chat_records", oldRecordList);
             }
             oldGroupList.set(i, oldgroupmap);
-            Log.d("oldGroupList", "set");
+            Log.d("oldGroupList-set", oldGroupList.toString());
 
 
-            LogUtil.e("oldgrouplist2", new Gson().toJson(oldGroupList));
+            Log.d("oldgrouplist2", new Gson().toJson(oldGroupList));
 
 
 
@@ -184,8 +191,8 @@ public class Manager30 {
         if(type == 1)
         {
             List<String> checkedlist = (List<String>) checkedMap.get("checkedlist");
-            Long maxtime = Long.parseLong(checkedMap.get("maxtime").toString());
-            Long mintime = Long.parseLong(checkedMap.get("mintime").toString());
+            long maxtime = Long.parseLong(checkedMap.get("maxtime").toString());
+            long mintime = Long.parseLong(checkedMap.get("mintime").toString());
 
             for(int i =0;i<oldGroupList.size();i++)//丢弃不在选中群组列表中的群组；
             {
@@ -206,6 +213,7 @@ public class Manager30 {
                     i--;
                 }
             }
+            Log.d("丢弃不在选中群组列表中的群组后",oldGroupList.toString());
 
             for(int i = 0;i<oldGroupList.size();i++)//丢弃不在选中范围内的聊天记录
             {
@@ -226,6 +234,39 @@ public class Manager30 {
 
             }
         }
+        Log.d("丢弃不在时间范围内后",oldGroupList.toString());
+
+        if(type ==2 )
+        {
+            Log.d("自动上传type", "type==2");
+
+            List<String> checkedlist = new ArrayList<>();
+            for(int i = 0 ;i<Share.fm3addedList.size();i++)
+            {
+                checkedlist.add(Share.fm3addedList.get(i).getId());
+            }
+
+            for(int i =0;i<oldGroupList.size();i++)//丢弃不在选中群组列表中的群组；
+            {
+                Map<String,Object> groupmap = oldGroupList.get(i);
+                boolean flag = false;
+                for(int j = 0;j<checkedlist.size();j++)
+                {
+                    String groupid = checkedlist.get(j);
+                    if(groupmap.get("group").equals(groupid))
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+                if(flag == false)
+                {
+                    oldGroupList.remove(i);
+                    i--;
+                }
+            }
+        }
+
         return oldGroupList;
     }
 }

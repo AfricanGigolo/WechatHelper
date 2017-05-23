@@ -204,6 +204,7 @@ public class Fm1UploadActivity extends Activity implements View.OnClickListener 
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
+                            Looper.prepare();
                             manager31.upload(checkedMap, 1);
                         }
                     }).start();

@@ -11,20 +11,22 @@ import android.os.Parcelable;
 public class Fm2Itembean implements Parcelable {
     private String title;
     private int right;
+    private String property;
     private boolean ischeck;
 
-    public Fm2Itembean(String title, int right) {
+    public Fm2Itembean(String title, int right,String property) {
         this.title = title;
         this.right = right;
+        this.property = property;
 
     }
 
-    public boolean getIscheck() {
-        return ischeck;
+    public String getTitle() {
+        return title;
     }
 
-    public void setIscheck(boolean ischeck) {
-        this.ischeck = ischeck;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public int getRight() {
@@ -35,12 +37,20 @@ public class Fm2Itembean implements Parcelable {
         this.right = right;
     }
 
-    public String getTitle() {
-        return title;
+    public String getProperty() {
+        return property;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setProperty(String property) {
+        this.property = property;
+    }
+
+    public boolean getIscheck() {
+        return ischeck;
+    }
+
+    public void setIscheck(boolean ischeck) {
+        this.ischeck = ischeck;
     }
 
     @Override
@@ -52,12 +62,14 @@ public class Fm2Itembean implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.title);
         dest.writeInt(this.right);
+        dest.writeString(this.property);
         dest.writeByte(this.ischeck ? (byte) 1 : (byte) 0);
     }
 
     protected Fm2Itembean(Parcel in) {
         this.title = in.readString();
         this.right = in.readInt();
+        this.property = in.readString();
         this.ischeck = in.readByte() != 0;
     }
 
