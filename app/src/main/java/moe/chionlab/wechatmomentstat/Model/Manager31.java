@@ -230,6 +230,7 @@ public class Manager31 {
                     map2.put("timestamp", map.get("timestamp"));
                     map2.put("order", map.get("order"));
                     map2.put("data", map.get("data"));
+                    Log.i("t1", map.get("timestamp").toString());
 
                     dataList.set(k, map2);
                 }

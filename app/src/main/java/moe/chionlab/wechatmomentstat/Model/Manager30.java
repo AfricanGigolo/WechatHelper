@@ -191,8 +191,8 @@ public class Manager30 {
         if(type == 1)
         {
             List<String> checkedlist = (List<String>) checkedMap.get("checkedlist");
-            long maxtime = Long.parseLong(checkedMap.get("maxtime").toString());
-            long mintime = Long.parseLong(checkedMap.get("mintime").toString());
+            long maxtime = Long.parseLong(checkedMap.get("maxtime").toString())/1000;
+            long mintime = Long.parseLong(checkedMap.get("mintime").toString())/1000;
 
             for(int i =0;i<oldGroupList.size();i++)//丢弃不在选中群组列表中的群组；
             {
@@ -223,6 +223,7 @@ public class Manager30 {
                 {
                     Map<String,Object> recordmap = recordlist.get(j);
                     Long curttentime = Long.parseLong(recordmap.get("timestamp").toString());
+                    Log.d("time2", "maxtime:"+maxtime+" mintime:"+mintime+" currenttime:"+curttentime);
                     if(curttentime<mintime||curttentime>maxtime)
                     {
                         recordlist.remove(j);
@@ -233,8 +234,9 @@ public class Manager30 {
                 oldGroupList.set(i,groupmap);
 
             }
+            Log.d("丢弃不在时间范围内后",oldGroupList.toString());
         }
-        Log.d("丢弃不在时间范围内后",oldGroupList.toString());
+
 
         if(type ==2 )
         {
@@ -266,6 +268,7 @@ public class Manager30 {
                 }
             }
         }
+
 
         return oldGroupList;
     }

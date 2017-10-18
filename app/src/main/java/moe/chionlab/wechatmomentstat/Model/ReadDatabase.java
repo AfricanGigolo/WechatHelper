@@ -131,7 +131,7 @@ public class ReadDatabase {
                     String talker = c.getString(c.getColumnIndex("talker"));
                     String status = "" + c.getInt(c.getColumnIndex("status"));
                     String type = "" + c.getInt(c.getColumnIndex("type"));
-                    String createTime = "" + c.getLong(c.getColumnIndex("createTime"));
+                    String createTime = "" + (c.getLong(c.getColumnIndex("createTime")))/1000;
                     if (!type.equals("1"))
                         continue;
 
@@ -237,14 +237,14 @@ public class ReadDatabase {
                 String str =  "第" + (i + 1) + "条:\n"
                         + "用户名:" + snsInfo.authorId
                         + "\n昵称:" + snsInfo.authorName
-                        + "\n时间:" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault()).format(new Date(snsInfo.timestamp * 1000)) +
+                        + "\n时间:" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault()).format(new Date(snsInfo.timestamp)) +
                         "\n内容:" + snsInfo.content + "\n\n";
 
                 Log.d("ReadDatabase"+i, str);
                 map.put("code",0);
                 map.put("sender",snsInfo.authorId);
                 map.put("name",snsInfo.authorName);
-                map.put("timestamp",snsInfo.timestamp*1000);
+                map.put("timestamp",snsInfo.timestamp);
                 map.put("order",0);
                 Map<String,Object> textmap = new HashMap<>();
                 textmap.put("text",snsInfo.content);

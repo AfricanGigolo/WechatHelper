@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -24,13 +25,14 @@ import moe.chionlab.wechatmomentstat.R;
 import moe.chionlab.wechatmomentstat.common.Config;
 import moe.chionlab.wechatmomentstat.common.NowUser;
 import moe.chionlab.wechatmomentstat.common.ProgressBarCycle;
+import moe.chionlab.wechatmomentstat.common.Share;
 
 /*登录界面*/
 
 public class LoginActivity extends Activity implements View.OnClickListener {
 
     TextView idTV,pwTV;
-    EditText idET,pwET;
+    EditText idET,pwET,ipET;
     Button loginBT;
     CheckBox remCB,autochatCB,autosnsCB;
     SharedPreferences sharedPreferences = null;
@@ -99,6 +101,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     private void initView() //初始化视图
     {
+        ipET = (EditText) findViewById(R.id.et_lg_ip);
         idTV = (TextView) findViewById(R.id.tv_lg_id);  //账号textView
         idET = (EditText) findViewById(R.id.et_lg_id);  //账号editText
         pwTV = (TextView) findViewById(R.id.tv_lg_pw);  //密码xx
@@ -110,6 +113,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
         sharedPreferences = getSharedPreferences("LoginInfo",MODE_PRIVATE);
         editor = sharedPreferences.edit();
+        ipET.setText(sharedPreferences.getString("ip",""));
 
         if(sharedPreferences.getBoolean("rem_checked",false))
         {
@@ -173,6 +177,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 //写登录逻辑
                 final String account = idET.getText().toString();
                 final String password = pwET.getText().toString();
+                editor.putString("ip",ipET.getText().toString());
+                Share.IP_ADDRESS="http://"+ipET.getText().toString()+":8080";
                 if(account.equals(""))
                 {
                     Toast.makeText(this, "请输入账号", Toast.LENGTH_SHORT).show();
@@ -194,6 +200,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     editor.putString("account",account);
                     editor.putString("password",password);
                     editor.commit();
+                    Log.i("ip",Share.IP_ADDRESS);
                     ProgressBarCycle.setProgressBar(LoginActivity.this,"正在登陆，请稍候...");
                    new Thread(new Runnable() {
                        @Override
